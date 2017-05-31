@@ -1,0 +1,7 @@
+How to use ShinyFlan
+
+1- Install R packages shiny and flan;
+
+2- Launch the app by running:
+
+runGitHub("AdriMaz/ShinyFlan")
