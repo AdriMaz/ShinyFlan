@@ -76,7 +76,7 @@ shinyUI(fluidPage(
 	column(6,
 	  conditionalPanel(condition = "input.twosample && (input.mfn1 < 0)",
 	    numericInput(inputId = "mutations0", "Mutations number difference",
-	      value = 0, step = 0.1
+	      value = 0, min = 0, step = 0.1
 	    )
 	  ),
 	  conditionalPanel(condition = "!input.twosample && (input.mfn1 < 0)",
@@ -86,12 +86,12 @@ shinyUI(fluidPage(
 	  ),
 	  conditionalPanel(condition = "input.twosample && (input.mfn1 > 0)",
 	    numericInput(inputId = "mutprob0", "Mutation probability difference",
-	      value = 0, step = 1e-10
+	      value = 0, min = 0, max = 1, step = 1e-10
 	    )
 	  ),
 	  conditionalPanel(condition = "!input.twosample && (input.mfn1 > 0)",
 	    numericInput(inputId = "mutations0", "Mutation probability",
-	      value = 1, min = 0, step = 1e-10
+	      value = 1, min = 0, max = 1, step = 1e-10
 	    )
 	  )
 	),
@@ -99,7 +99,7 @@ shinyUI(fluidPage(
 	  column(6,
 	    conditionalPanel(condition = "input.twosample",
 	      numericInput(inputId = "fitness0", "Fitness difference",
-		value = 0, step = 0.1
+		value = 0, min = 0, step = 0.1
 	      )
 	    ),
 	    conditionalPanel(condition = "!input.twosample",

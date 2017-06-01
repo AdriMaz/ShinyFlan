@@ -63,11 +63,12 @@ observeEvent(input$launch, {
     if (is.null(inFile1())) return(NULL)
 
     data1 <- read.csv(inFile1()$datapath, header = input$header)
+    alt <- input$mutalt
+    clevel <- input$conflevel
+
     if(!input$twosample){
       fit <- if(input$estfit) NULL else input$fitvalue1
       fit0 <- if(is.null(fit)) input$fitness0 else NULL
-      alt <- input$mutalt
-      clevel <- input$conflevel
 
       if(is.null(fit)) {
 	# clevel <- c(clevel,input$fitconf)
