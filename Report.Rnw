@@ -1,0 +1,185 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc} % To handle special characters such as ç
+\usepackage[T1]{fontenc}
+%\usepackage[french]{babel}
+\parindent0pt
+\topmargin 0.0cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\textwidth 16cm
+\textheight 21cm
+
+\newcommand{\textbfit}[1]{\textbf{\textit{#1}}}
+\newcommand{\IC}[2]{[#1;#2]}
+
+\usepackage{array}
+\newcolumntype{M}[1]{>{\centering} m{#1}} % Écrire sur plusieurs lignes dans un tableau
+
+\begin{document}
+%Knitr test in \LaTeX.
+
+\section*{Summary of the data}
+
+  <<echo=FALSE, eval=TRUE>>=
+    cat("Sample 1: \n")
+    t(sapply(RV$data1,summary))
+    if(input$twosample){
+      cat("\n Sample 2: \n")
+      t(sapply(RV$data2,summary))
+    }
+  @
+
+\section*{Model assumptions}
+% 
+    \paragraph*{Growth model: }\texttt{\Sexpr{input$model}} model
+	\paragraph*{Parameters:}
+	<<results='asis', echo=FALSE>>=
+			cat(paste("\\begin{center} \\renewcommand{\\arraystretch}{1.5}",
+				if(!input$estfit)  {paste("\\begin{tabular}{| c | M{2cm} |M{2cm} | M{2cm}|}
+												\\hline
+												& Fitness & Death & Plating efficiency \\tabularnewline \\hline
+										Sample 1 & \\texttt{",  input$fitvalue1, "}&\\texttt{",  input$death1, "}&\\texttt{",  input$plateff1, "}\\tabularnewline\\hline",
+										if(input$twosample) paste("Sample 2 &\\texttt{",  input$fitvalue2, "}&\\texttt{",  input$death2, "}&\\texttt{",  input$plateff2, "}\\tabularnewline\\hline")
+										)
+				 } else {
+				paste("\\begin{tabular}{| c | M{2cm} |M{2cm} | }
+												\\hline
+						 & Death & Plating efficiency \\tabularnewline \\hline
+					Sample 1 &\\texttt{",  input$death1, "}&\\texttt{",  input$plateff1, "}\\tabularnewline\\hline",
+					if(input$twosample) paste("Sample 2 &\\texttt{",  input$death2, "}&\\texttt{",  input$plateff2, "}\\tabularnewline\\hline")
+					)
+					 }
+					,"\\end{tabular}\\end{center}"))
+	@	
+	
+	<<results='asis', echo=FALSE>>=	
+			if(input$fluct) {
+			cat(paste("\\paragraph*{Fluctuation of final number of cells:}  \\begin{center}\\renewcommand{\\arraystretch}{1.5}
+			\\begin{tabular}{|c|M{5cm}| M{5cm}|}
+				\\hline 
+							& Mean of final number of cells & Coef. variation of final number of cells \\tabularnewline \\hline
+					Sample 1 &\\texttt{", format(signif(as.numeric(input$mfn1),6),scientific=TRUE), "}&\\texttt{",  signif(as.numeric(input$cvfn1),6), "}\\tabularnewline\\hline",
+				if(input$twosample) paste("Sample 2 &\\texttt{", format(signif(as.numeric(input$mfn2),6),scientific=TRUE), "}&\\texttt{",  signif(as.numeric(input$cvfn2),6), "}\\tabularnewline\\hline")
+			,"\\end{tabular}\\end{center}"))
+			}
+		@
+
+
+\section*{Statistic inference}
+
+	\subsection*{Parametric estimation}
+
+	\paragraph*{Estimation method: } \texttt{\Sexpr{input$method}} method
+
+	\paragraph*{Estimates}
+	
+		<<results='asis', echo=FALSE>>=
+			cat(paste("\\begin{center}\\renewcommand{\\arraystretch}{1.5}",
+				if(input$twosample) {	 
+					if(!input$estfit){
+						paste("\\begin{tabular}{|c|M{5cm}|}
+							\\hline 
+							&", if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "\\tabularnewline \\hline
+							Sample 1 & \\texttt{", if(input$fluct) format(signif(RV$res$estimate[1],6),scientific = TRUE) else signif(RV$res$estimate[1],6), "}\\tabularnewline\\hline
+							Sample 2 & \\texttt{", if(input$fluct) format(signif(RV$res$estimate[2],6),scientific = TRUE) else signif(RV$res$estimate[2],6), "}\\tabularnewline\\hline"
+						)
+					} else {
+						paste("\\begin{tabular}{|c|M{5cm}|M{5cm}|}
+							\\hline					
+							&", if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "& Fitness estimate \\tabularnewline \\hline
+							Sample 1 &\\texttt{", if(input$fluct) format(signif(RV$res$estimate[1,1],6),scientific = TRUE)  else  signif(RV$res$estimate[1,1],6), "}&\\texttt{", signif(RV$res$estimate[1,2],6), "}\\tabularnewline\\hline
+							Sample 2 &\\texttt{", if(input$fluct) format(signif(RV$res$estimate[2,1],6),scientific = TRUE)  else  signif(RV$res$estimate[2,1],6), "}&\\texttt{", signif(RV$res$estimate[2,2],6), "}\\tabularnewline\\hline"
+						)
+					}
+				} else {	
+					if(!input$estfit){
+						paste("\\begin{tabular}{|c|M{5cm}|}
+							\\hline 
+							& ", if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "\\tabularnewline \\hline
+							Sample 1 & \\texttt{", if(input$fluct) format(signif(RV$res$estimate[1],6),scientific = TRUE) else signif(RV$res$estimate[1],6), "}\\tabularnewline\\hline"
+						)
+					} else {
+						paste("\\begin{tabular}{|c|M{5cm}|M{5cm}|}
+							\\hline					
+							&", if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "& Fitness estimate \\tabularnewline \\hline
+							Sample 1 &\\texttt{", if(input$fluct) format(signif(RV$res$estimate[1],6),scientific = TRUE)  else  signif(RV$res$estimate[1],6), " }&\\texttt{", signif(RV$res$estimate[2],6), "}\\tabularnewline\\hline")
+					}
+				}
+ 				,"\\end{tabular}\\end{center}"))
+		@
+	
+	\paragraph*{Confidence intervals}
+	 (confidence level : \texttt{\Sexpr{input$conflevel}})
+	
+	<<results='asis', echo=FALSE>>=
+			cat(paste("\\begin{center}\\renewcommand{\\arraystretch}{1.5}",
+				if(input$twosample) { 
+					if(!input$estfit){
+						paste("\\begin{tabular}{|c|}
+							\\hline 
+							", if(input$fluct) "Mutation probability difference IC" else "Mutation number difference  IC", "\\tabularnewline \\hline
+							\\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2],6),scientific = TRUE)  else  signif(RV$res$conf.int[2],6) ,"}}\\tabularnewline\\hline"
+						)
+					} else {
+						paste("\\begin{tabular}{|c|c|}
+							\\hline					
+							", if(input$fluct) "Mutation probability difference  IC" else "Mutation number difference  IC", "& Fitness difference  IC \\tabularnewline \\hline
+							 \\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1,1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[2,1],6) ,"}}& \\texttt{\\IC{", signif(RV$res$conf.int[1,2],6), "}{", signif(RV$res$conf.int[2,2],6) , "}}\\tabularnewline\\hline"
+						)
+					}
+				} else {	
+					if(!input$estfit){
+						paste("\\begin{tabular}{|c|}
+							\\hline 
+							", if(input$fluct) "Mutation probability IC" else "Mutation number IC", "\\tabularnewline \\hline
+							\\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2],6),scientific = TRUE)  else  signif(RV$res$conf.int[2],6) ,"}}\\tabularnewline\\hline"
+						)
+					} else {
+						paste("\\begin{tabular}{|c|c|}
+							\\hline					
+							", if(input$fluct) "Mutation probability IC" else "Mutation number IC", "& Fitness IC \\tabularnewline \\hline
+							\\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1,1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[2,1],6) ,"}}& \\texttt{\\IC{", signif(RV$res$conf.int[1,2],6), "}{", signif(RV$res$conf.int[2,2],6) , "}} \\tabularnewline\\hline"
+						)
+					}
+				}
+ 				,"\\end{tabular}\\end{center}"))
+		@
+	
+	
+	\subsection*{Hypothesis testing}	
+	
+      \paragraph*{Null hypotheses:}
+    	\begin{itemize}
+    		\item The true \textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else "probability", if(input$twosample) " difference",sep="")}} is equal to
+    		\texttt{\Sexpr{if(!input$fluct & !input$twosample) input$mut0 else if(input$fluct & !input$twosample) input$mutprob0 else if(!input$fluct & input$twosample) input$mutdiff0 else if(input$fluct & input$twosample) input$mutprobdiff0}};
+    		<<results='asis', echo=FALSE>>=
+    		    if(input$estfit) {
+    		    	cat(paste("\\item The true \\textbfit{fitness", if(input$twosample) " difference","} is equal to \\texttt{",input$fit0,"};",sep=""))
+    		    }
+    		@
+		\end{itemize}
+		\paragraph*{Alternative hypotheses:}
+		\begin{itemize}
+			\item The true \textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else if(input$fluct) "probability", if(input$twosample) " difference",sep="")}} is \textbfit{\Sexpr{if(input$mutalt == "two.sided") "different from" else paste(input$mutalt,"than")}} \texttt{\Sexpr{if(!input$fluct & !input$twosample) input$mut0 else if(input$fluct & !input$twosample) input$mutprob0 else if(!input$fluct & input$twosample) input$mutdiff0 else if(input$fluct & input$twosample) input$mutprobdiff0}};
+			    		<<results='asis', echo=FALSE>>=
+    		    if(input$estfit) {
+    		    	cat(paste("\\item The true \\textbfit{fitness", if(input$twosample) " difference","}  is ",if(input$fitalt == "two.sided") "\\textbfit{different from} " else paste("\\textbfit{",input$fitalt," than }",sep=""), " \\texttt{", input$fit0,"};",sep="")
+    		    	)
+    		    }
+    		@
+		\end{itemize}
+      \paragraph*{Decision:}
+      \begin{itemize}
+      	\item The $p$-value for \textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else if(input$fluct) "probability", if(input$twosample) " difference",sep="")}} is equal to \texttt{\Sexpr{format(signif(RV$res$p.value[1],6),scientific=TRUE)}}. Thus, we can \Sexpr{if(RV$res$p.value[1] > 0.05) "not"} think that the \textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else if(input$fluct) "probability", if(input$twosample) " difference",sep="")}} is significantly \textbfit{\Sexpr{if(input$mutalt == "two.sided") "different from" else paste(input$mutalt,"than")}} \texttt{\Sexpr{if(!input$fluct & !input$twosample) input$mut0 else if(input$fluct & !input$twosample) input$mutprob0 else if(!input$fluct & input$twosample) input$mutdiff0 else if(input$fluct & input$twosample) input$mutprobdiff0}};
+      <<results='asis', echo=FALSE>>=
+      	  if(input$estfit) {
+			cat(paste("\\item The $p$-value for \\textbfit{fitness", if(input$twosample) " difference","} is equal to \\texttt{",format(signif(RV$res$p.value[2],6),scientific=TRUE),"}. Thus, we can",
+			 if(RV$res$p.value[2] > 0.05) "not ", "think that the \\textbfit{fitness", if(input$twosample) " difference", "} is significantly ", if(input$fitalt == "two.sided") "\\textbfit{different from} " else paste("\\textbfit{",input$fitalt," than }",sep=""), " \\texttt{", input$fit0 ,"};",sep="")
+			 )
+		}
+      @
+    \end{itemize}
+
+
+
+\end{document}
