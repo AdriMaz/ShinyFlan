@@ -1,0 +1,232 @@
+<!-- R Code -->
+<!-- Tests -->
+````{r, echo=FALSE, eval=TRUE}
+	ltld <- input$model.est == "LD"
+	lth <- input$model.est == "H"
+
+	ml <- input$method.sim == "ML"
+	gf <- input$method.sim == "GF"
+	p0 <- input$method.sim == "P0"
+
+	estfit <- input$estfitsim
+	fluct <- input$fluctsim
+````
+
+
+<!-- ML method, LD model, no fluct, unknown fitness -->
+````{r, echo=(ltld)&(!lth)&(!fluct)&(estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 death = death, plateff = plateff,
+	 model = "LD",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, H model, no fluct, unknown fitness -->
+````{r, echo=(!ltld)&(lth)&(!fluct)&(estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 death = death, plateff = plateff,
+	 model = "H",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, LD model, no fluct, known fitness -->
+````{r, echo=(ltld)&(!lth)&(!fluct)&(!estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "LD",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, H model, no fluct, known fitness -->
+````{r, echo=(!ltld)&(lth)&(!fluct)&(!estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "H",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, LD model, fluct, unknown fitness -->
+````{r, echo=(ltld)&(!lth)&(fluct)&(estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 death = death, plateff = plateff,
+	 model = "LD",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, H model, fluct, unknown fitness -->
+````{r, echo=(!ltld)&(lth)&(fluct)&(estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 death = death, plateff = plateff,
+	 model = "H",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, LD model, fluct, known fitness -->
+````{r, echo=(ltld)&(!lth)&(fluct)&(!estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "LD",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- ML method, H model, fluct, known fitness -->
+````{r, echo=(!ltld)&(lth)&(fluct)&(!estfit)&(ml)&(!gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "H",
+	 method = "ML", winsor = winsor
+)
+````
+
+<!-- GF method, LD model, no fluct, unknown fitness -->
+````{r, echo=(ltld)&(!lth)&(!fluct)&(estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 death = death, plateff = plateff,
+	 model = "LD",
+	 method = "GF"
+)
+````
+
+<!-- GF method, H model, no fluct, unknown fitness -->
+````{r, echo=(!ltld)&(lth)&(!fluct)&(estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 death = death, plateff = plateff,
+	 model = "H",
+	 method = "GF"
+)
+````
+
+<!-- GF method, LD model, no fluct, known fitness -->
+````{r, echo=(ltld)&(!lth)&(!fluct)&(!estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "LD",
+	 method = "GF"
+)
+````
+
+<!-- GF method, H model, no fluct, known fitness -->
+````{r, echo=(!ltld)&(lth)&(!fluct)&(!estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "H",
+	 method = "GF"
+)
+````
+
+<!-- GF method, LD model, fluct, unknown fitness -->
+````{r, echo=(ltld)&(!lth)&(fluct)&(estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 death = death, plateff = plateff,
+	 model = "LD",
+	 method = "GF"
+)
+````
+
+<!-- GF method, H model, fluct, unknown fitness -->
+````{r, echo=(!ltld)&(lth)&(fluct)&(estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 death = death, plateff = plateff,
+	 model = "H",
+	 method = "GF"
+)
+````
+
+<!-- GF method, LD model, fluct, known fitness -->
+````{r, echo=(ltld)&(!lth)&(fluct)&(!estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "LD",
+	 method = "GF"
+)
+````
+
+<!-- GF method, H model, fluct, known fitness -->
+````{r, echo=(!ltld)&(lth)&(fluct)&(!estfit)&(!ml)&(gf)&(!p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "H",
+	 method = "GF"
+)
+````
+
+
+
+<!-- P0 method, LD model, no fluct, unknown fitness -->
+````{r, echo=(ltld)&(!lth)&(!fluct)&(estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 death = death, plateff = plateff,
+	 model = "LD",
+	 method = "P0", winsor = winsor
+)
+````
+
+<!-- P0 method, H model, no fluct, unknown fitness -->
+````{r, echo=(!ltld)&(lth)&(!fluct)&(estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 death = death, plateff = plateff,
+	 model = "H",
+	 method = "P0", winsor = winsor
+)
+````
+
+<!-- P0 method, LD model, no fluct, known fitness -->
+````{r, echo=(ltld)&(!lth)&(!fluct)&(!estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "LD",
+	 method = "P0"
+)
+````
+
+<!-- P0 method, H model, no fluct, known fitness -->
+````{r, echo=(!ltld)&(lth)&(!fluct)&(!estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "H",
+	 method = "P0"
+)
+````
+
+<!-- P0 method, LD model, fluct, unknown fitness -->
+````{r, echo=(ltld)&(!lth)&(fluct)&(estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 death = death, plateff = plateff,
+	 model = "LD",
+	 method = "P0", winsor = winsor
+)
+````
+
+<!-- P0 method, H model, fluct, unknown fitness -->
+````{r, echo=(!ltld)&(lth)&(fluct)&(estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 death = death, plateff = plateff,
+	 model = "H",
+	 method = "P0", winsor = winsor
+)
+````
+
+<!-- P0 method, LD model, fluct, known fitness -->
+````{r, echo=(ltld)&(!lth)&(fluct)&(!estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "LD",
+	 method = "P0"
+)
+````
+
+<!-- P0 method, H model, fluct, known fitness -->
+````{r, echo=(!ltld)&(lth)&(fluct)&(!estfit)&(!ml)&(!gf)&(p0) ,eval=FALSE}
+mutestim(mc = mc, fn = fn,
+	 fitness = fitness, death = death, plateff = plateff,
+	 model = "H",
+	 method = "P0", winsor = winsor
+)
+````

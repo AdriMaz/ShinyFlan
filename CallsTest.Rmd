@@ -1,0 +1,872 @@
+````{r, echo=FALSE, eval=TRUE}
+	estfit <- input$estfit
+  twosample <- input$twosample
+  if(twosample){
+    withfluctfn1 <- length(RV$data1) == 2
+    withfluctfn2 <- length(RV$data2) == 2
+    withfluctfn <- withfluctfn1 & withfluctfn2
+
+    withfluctmfn1 <- input$fluct & (length(RV$data1) == 1)
+    withfluctmfn2 <- input$fluct & (length(RV$data2) == 1)
+    withfluctmfn <- withfluctmfn1 & withfluctmfn2
+  } else {
+    withfluctfn1 <- FALSE ; withfluctfn2 <- FALSE
+    withfluctmfn1 <- FALSE ; withfluctmfn2 <- FALSE
+
+    withfluctfn <- length(RV$data1) == 2
+    withfluctmfn <- input$fluct & (length(RV$data1) == 1)
+  }
+	ml <- input$method == "ML"
+	gf <- input$method == "GF"
+	p0 <- input$method == "P0"
+
+	ld <- input$model == "LD"
+	h <- input$model == "H"
+````
+
+<!--One-Sample, Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+````{r, echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, !Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+<!--One-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+<!--One-Sample, Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, !Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+<!--One-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--One-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+
+
+<!--One-Sample, Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+<!--One-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0"
+)
+````
+
+<!--One-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+<!--One-Sample, Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--One-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, only fn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+<!--One-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0"
+)
+````
+
+<!--One-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--One-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+
+
+
+
+
+<!--Two-Sample, Fit, only fn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, only fn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, only fn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, only fn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "ML",
+	winsor = winsor)
+````
+
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, !Fit, only fn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+<!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+<!--Two-Sample, Fit, only fn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, !Fit, only fn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+<!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF"
+)
+````
+
+<!--Two-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "GF"
+)
+````
+
+
+
+<!--Two-Sample, Fit, only fn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, only fn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+<!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0"
+)
+````
+
+<!--Two-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+<!--Two-Sample, Fit, only fn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, only fn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc, fn = fn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````
+
+<!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	mfn = mfn, cvfn = cvfn,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0"
+)
+````
+
+<!--Two-Sample, Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, !fluct, winsor -->
+
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = mc,
+	fitness = fitness, death = death, plateff = plateff,
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = mutalt, method = "P0"
+)
+````

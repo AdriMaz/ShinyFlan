@@ -1,7 +1,10 @@
 # require(shiny)
+require(markdown)
+require(shinyjs)
 
 shinyUI(
   fluidPage(
+    useShinyjs(),
   tabsetPanel(
 
 
@@ -13,6 +16,21 @@ shinyUI(
 
 ### SIDEBAR TAB1
       	sidebarPanel(width = 4,
+          fluidRow(
+      	    column(3,
+              uiOutput(outputId = "launchtest")
+      	    ),
+            column(3,
+              uiOutput(outputId = "dlbutton")
+    	      ),
+            column(3,
+              uiOutput(outputId = "cleanall")
+      	    )
+            # ,
+            # column(3,
+            #   uiOutput(outputId = "showcode")
+      	    # )
+      	  ),
       	  tags$h4(tags$strong("Data file(s)")),
       	  fluidRow(
       	    column(12,
@@ -25,23 +43,23 @@ shinyUI(
       	    )
       	  ),
       	  fluidRow(
+      	    column(12,
+      	      conditionalPanel(condition = "input.twosample",
+                fileInput(inputId = "sample2", label = "Choose file for sample 2",
+          		    accept = c(
+            		    "text/csv",
+            		    "text/comma-separated-values,text/plain",
+            		    ".csv")
+                )
+      	      )
+      	    )
+      	  ),
+          fluidRow(
       	    column(4,
       	      checkboxInput(inputId = "header", label = tags$strong("Header"), value = TRUE)
       	    ),
       	    column(8,
       	      checkboxInput(inputId = "twosample", label = tags$strong("Two Sample Test"), value = FALSE)
-      	    )
-      	  ),
-      	  fluidRow(
-      	    column(12,
-      	      conditionalPanel(condition = "input.twosample",
-            		fileInput(inputId = "sample2", label = "Choose file for sample 2",
-            		  accept = c(
-            		    "text/csv",
-            		    "text/comma-separated-values,text/plain",
-            		    ".csv")
-            		)
-      	      )
       	    )
       	  ),
           # tags$hr(),
@@ -65,7 +83,7 @@ shinyUI(
       		      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
       	      )
       	    ),
-            conditionalPanel(condition = "input.method == 'ML' || (input.method == 'P0' && input.estfit)",
+            conditionalPanel(condition = "input.method == 'ML' | (input.method == 'P0' & input.estfit)",
               column(6,
     # 	    numericInput(inputId = "winsor", "Winsor parameter",
     # 	      value = 1024, min = 0, step = 1
@@ -177,6 +195,30 @@ shinyUI(
           		  value = 0.95
           		)
           	)
+          ),
+          tags$hr(),
+          tags$h4(tags$strong("Graphic settings")),
+          fluidRow(
+            column(6,
+              numericInput(inputId = "nclass1", label = "Number of class",
+                min = 1, value = 10)
+            ),
+            column(6,
+              numericInput(inputId = "max.plot1", label = "Maximal value",
+                min = 0, value = 100)
+            )
+          ),
+          conditionalPanel("input.twosample",
+            fluidRow(
+              column(6,
+                numericInput(inputId = "nclass2", label = "Number of class (Sample 2)",
+                  min = 1, value = 10)
+              ),
+              column(6,
+                numericInput(inputId = "max.plot2", label = "Maximal value (Sample 2)",
+                  min = 0, value = 100)
+              )
+            )
           )
       	),
 
@@ -184,7 +226,7 @@ shinyUI(
         mainPanel(
       	  tags$h4(tags$strong("Sample 1")),
       	  fluidRow(
-      	    column(10,
+      	    column(12,
       	      style = 'overflow-x: scroll; position: relative',
       	      tableOutput(outputId = "contents1")
       	    )
@@ -202,12 +244,12 @@ shinyUI(
       	    ),
             conditionalPanel(condition = "input.fluct",
         	    column(2,
-  	            textInput(inputId = "mfn1", "Mean Final Number",
+  	            textInput(inputId = "mfn1", "Mean Final Number of cells",
     		          value = 0
     	          )
   	          ),
       	      column(3,
-      	        textInput(inputId = "cvfn1", "Coef. Variation Final Number",
+      	        textInput(inputId = "cvfn1", "Coef. Variation final number of cells",
     		          value = 0
       	        )
         	    )
@@ -223,7 +265,7 @@ shinyUI(
       	  conditionalPanel(condition = "input.twosample",
       	    tags$h4(tags$strong("Sample 2")),
       	    fluidRow(
-      	      column(10,
+      	      column(12,
             		style = 'overflow-x: scroll; position: relative',
             		tableOutput(outputId = "contents2")
       	      )
@@ -241,12 +283,12 @@ shinyUI(
       	      ),
               conditionalPanel(condition = "input.fluct",
         	      column(2,
-              		textInput(inputId = "mfn2", "Mean Final Number",
+              		textInput(inputId = "mfn2", "Mean final number of cells",
               		  value = 0
               		)
         	      ),
         	      column(3,
-              		textInput(inputId = "cvfn2", "Coef. Variation Final Number",
+              		textInput(inputId = "cvfn2", "Coef. variation final number of cells",
               		  value = 0
               		)
         	      )
@@ -260,23 +302,25 @@ shinyUI(
       	      )
 	          )
 	        ),
-      	  fluidRow(
-      	    column(2,
-              uiOutput(outputId = "launchtest")
-      	    ),
-            column(2,
-    		      uiOutput(outputId = "dlbutton")
-    	      ),
-    	      column(2,
-    		      uiOutput(outputId = "refresh")
-      	    ),
-            column(2,
-    		      uiOutput(outputId = "cleanall")
-      	    )
-      	  ),
+          tags$hr(),
+          tags$h4(tags$strong("Visual representation")),
           fluidRow(
-            column(10,
-              # textOutput(outputId = "warn"),
+            column(12,
+              plotOutput("graph1")
+            )
+          ),
+          fluidRow(
+            conditionalPanel("input.twosample",
+              column(12,
+                plotOutput("graph2")
+              )
+            )
+          ),
+          tags$hr(),
+          tags$h4(tags$strong("Result of the test")),
+          fluidRow(
+            column(6,
+              uiOutput("callstest"),
               verbatimTextOutput(outputId = "warn"),
               tags$head(
                 tags$style(type='text/css',
@@ -285,135 +329,77 @@ shinyUI(
                          }"
                          )
               )
-            )
-          ),
-      	  fluidRow(
-      	    column(10,
+            ),
+      	    column(6,
       	      verbatimTextOutput(outputId = "restest")
     	      )
           )
-          # ,
-          # fluidRow(
-  	      # )
         )
       )
     ),
 
-### TAB 2
-    tabPanel("Graphic representation",
-      tags$h1("Fluctuation Analysis Application using R package flan"),
-      sidebarLayout(
-
-### SIDEBAR TAB 2
-        sidebarPanel(width = 4,
-        	tags$h4(tags$strong("Parameters")),
-        	  fluidRow(
-        	    column(6,
-        	      textInput(inputId = "mut.plot", label = "Mutation number",
-              		value = 1
-         	      )
-        	    ),
-        	    column(6,
-        	      textInput(inputId = "fit.plot", label = "Fitness",
-      		        value = 1
-        	      )
-        	    )
-        	  ),
-        	  fluidRow(
-        	    column(6,
-        	      textInput(inputId = "death.plot", label = "Death parameter",
-        		      value = 0
-        	      )
-        	    ),
-        	    column(6,
-        	      textInput(inputId = "plateff.plot", label = "Plating efficiency",
-        		      value = 1
-        	      )
-        	    )
-        	  ),
-        	  fluidRow(
-        	    column(6,
-        	      selectInput(inputId = "model.plot", label = "Distribution of mutant lifetime",
-        		      choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H")
-        	      )
-        	    ),
-              column(6,
-                checkboxInput(inputId = "plot", label = tags$strong("Plot distribution with chosen parameters"), value = TRUE)
-              )
-            ),
-          # fluidRow(
-          #   column(6,
-          #     uiOutput(outputId = "Ndist")
-          #     )
-          #   ),
-	          tags$h4(tags$strong("Graphic settings")),
-          	fluidRow(
-          	  column(6,
-          	    numericInput(inputId = "nclass", label = "Number of class",
-          	      min = 1, value = 100)
-          	  ),
-              column(6,
-          	    numericInput(inputId = "max.plot", label = "Maximal value",
-          	      min = 0, value = 100)
-          	  )
-            )
-          ),
-
-## MAIN PANEL TAB 2
-      	  mainPanel(
-            fluidRow(
-              plotOutput("graph1")
-            ),
-            fluidRow(
-              conditionalPanel("input.twosample",
-                plotOutput("graph2")
-              )
-            )
-        	)
-        )
-      ),
-## TAB 3
+## TAB 2
       tabPanel("Simulation",
         tags$h1("Fluctuation Analysis Application using R package flan"),
-## SIDEBAR TAB 3
+## SIDEBAR TAB 2
         sidebarLayout(
           sidebarPanel(width = 4,
             fluidRow(
-              column(6,
-                numericInput(inputId = "nsim", label = "Sample size",
-                  min = 1, value = 100)
-              ),
-              column(6,
+              column(3,
                 actionButton(inputId = "sim", label = tags$strong("Sample"))
+              ),
+              column(3,
+                uiOutput(outputId = "est.sim")
+                # actionButton(inputId = "est.sim", label = tags$strong("Estimation"))
+              ),
+              column(3,
+                uiOutput(outputId = "dlsample")
+                  # actionButton(inputId = "showcodesim", label = tags$strong("Show/Hide Code"))
               )
+              # ,
+              # column(3,
+              #   uiOutput(outputId = "showcodesim")
+              # )
+              # )
             ),
             tags$hr(),
           	tags$h4(tags$strong("Parameters")),
         	  fluidRow(
+              column(6,
+                numericInput(inputId = "nsim", label = "Sample size",
+                  min = 1, value = 100)
+              ),
         	    column(6,
-        	      textInput(inputId = "mut.sim", label = "Mutation number",
-              		value = 1
-         	      )
-        	    ),
-        	    column(6,
-        	      textInput(inputId = "fit.sim", label = "Fitness",
-      		        value = 1
-        	      )
+                conditionalPanel(condition = , "!input.fluctsim",
+          	      textInput(inputId = "mut.sim", label = "Mutation number",
+                		value = 1
+           	      )
+                ),
+                conditionalPanel(condition = , "input.fluctsim",
+          	      textInput(inputId = "mutprob.sim", label = "Mutation probability",
+                		value = 1e-9
+           	      )
+                )
         	    )
         	  ),
         	  fluidRow(
+              column(6,
+        	      textInput(inputId = "fit.sim", label = "Fitness",
+      		        value = 1
+        	      )
+        	    ),
         	    column(6,
         	      textInput(inputId = "death.sim", label = "Death parameter",
         		      value = 0
         	      )
-        	    ),
-        	    column(6,
-        	      textInput(inputId = "plateff.sim", label = "Plating efficiency",
-        		      value = 1
-        	      )
         	    )
         	  ),
         	  fluidRow(
+              column(6,
+        	      textInput(inputId = "plateff.sim", label = "Plating efficiency",
+        		      value = 1
+        	      )
+        	    ),
         	    column(6,
         	      selectInput(inputId = "model.sim", label = "Distribution of mutant lifetime",
         		      choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H", "Log-Normal" = "LN", "Gamma" = "G")
@@ -428,11 +414,81 @@ shinyUI(
                 uiOutput(outputId = "param2.sim")
         	    )
             ),
+            fluidRow(
+              # column(4,
+                checkboxInput(inputId = "fluctsim", label = tags$strong("Random final counts"), value = FALSE)
+              # ),
+            ),
+            conditionalPanel("input.fluctsim",
+              fluidRow(
+                column(4,
+                  selectInput(inputId = "distfn.sim", label = "Distribution of final number of cells",
+                    choices = c("Constant" = "NO", "Log-Normal" = "LN", "Gamma" = "G")
+                  )
+                ),
+                column(4,
+                  textInput(inputId = "mfn.sim", label = "Mean final number of cells", value = 1e9)
+                ),
+                # conditionalPanel(condition = "input.distfn.sim != 'NO'",
+                column(4,
+                    # textInput(inputId = "cvfn.sim", label = "Coef. Variation final number of cells", value = 0)
+                  uiOutput(outputId = "cvfn.sim")
+                )
+              )
+            ),
+            tags$hr(),
+            tags$h4(tags$strong("Estimation settings")),
+            fluidRow(
+              column(6,
+        	      selectInput(inputId = "model.est", label = "Distribution of mutant lifetime",
+      		        choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H")
+        	      )
+              ),
+              column(6,
+        	      selectInput(inputId = "method.sim", label = "Estimation Method",
+        		      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
+        	      )
+              )
+            ),
+            fluidRow(
+              column(6,
+                checkboxInput(inputId = "estfitsim", label = tags$strong("Unknown fitness"),
+                  value = TRUE
+                )
+              ),
+              conditionalPanel(condition = "input.method == 'ML' | (input.method == 'P0' & input.estfit)",
+                column(6,
+              		textInput(inputId = "winsor.sim", "Winsor parameter",
+              		  value = 1024
+              		)
+                )
+              )
+            ),
+            fluidRow(
+              column(4,
+                textInput(inputId = "death.est", "Death parameter",
+                  value = 0
+                )
+              ),
+              column(4,
+                textInput(inputId = "plateff.est", "Plating efficiency",
+                  value = 1
+                )
+              ),
+              conditionalPanel(condition = "!input.estfitsim",
+                column(4,
+                  textInput(inputId = "fit.est", "Fitness parameter",
+                    value = 1
+                  )
+                )
+              )
+            ),
+            tags$hr(),
             tags$h4(tags$strong("Graphic settings")),
           	fluidRow(
           	  column(6,
           	    numericInput(inputId = "nclass.sim", label = "Number of class",
-          	      min = 1, value = 100)
+          	      min = 1, value = 10)
           	  ),
               column(6,
                 numericInput(inputId = "max.sim", label = "Max value",
@@ -440,21 +496,33 @@ shinyUI(
               )
             ),
             fluidRow(
-              column(12,
-                # uiOutput(outputId = "plot.theo")
-                checkboxInput(inputId = "plot.sim", label = tags$strong("Plot theoretical distribution"), value = TRUE)
+              column(6,
+                uiOutput(outputId = "plot.theo")
+                # conditionalPanel(condition = "input.model.sim == 'LD' | input.model.sim == 'H'",
+                #   checkboxInput(inputId = "plot.sim", label = tags$strong("Plot theoretical distribution"), value = TRUE)
+                # )
+              ),
+              column(6,
+                uiOutput(outputId = "plot.est")
               )
             )
           ),
           mainPanel(
             tags$h4(tags$strong("Sample")),
             fluidRow(
-              column(10,
+              column(6,
+                # hidden(
+                uiOutput(outputId = "callssim")
+                # )
+              ),
+            # ),
+            # fluidRow(
+              column(6,
                 # textOutput(outputId = "warn"),
                 verbatimTextOutput(outputId = "warn_sim"),
                 tags$head(
                   tags$style(type='text/css',
-                          "#warn{color: blue;
+                          "#warn_sim{color: blue;
                            font-weight: bold;
                            }"
                            )
@@ -462,22 +530,49 @@ shinyUI(
               )
             ),
         	  fluidRow(
-        	    column(10,
+        	    column(12,
         	      style = 'overflow-x: scroll; position: relative',
         	      tableOutput(outputId = "contents.sim")
         	    )
             ),
+            tags$hr(),
+            tags$h4(tags$strong("Visual representation")),
             fluidRow(
-              plotOutput("graph.sim")
+              column(12,
+                plotOutput("graph.sim")
+              )
             ),
+            tags$hr(),
+            tags$h4(tags$strong("Estimation")),
             fluidRow(
-        	    column(10,
-        	      verbatimTextOutput(outputId = "summary.sim")
-      	      )
+              column(6,
+                uiOutput(outputId = "callsest"),
+                verbatimTextOutput(outputId = "warn_est"),
+                tags$head(
+                  tags$style(type='text/css',
+                          "#warn_est{color: blue;
+                           font-weight: bold;
+                           }"
+                           )
+                )
+              ),
+              column(6,
+                verbatimTextOutput(outputId = "resest")
+              )
             )
           )
         )
-      )
+      ),
+### TAB 4 $: Help tab
+    tabPanel("Guide",
+      tags$h1("Fluctuation Analysis Application using R package flan"),
+      uiOutput(outputId = "guide")
+      # includeMarkdown("Guide.md")
+    )
+    # ,
+    # tabPanel("Report",
+    #   htmlOutput("report2")
+    # )
     )
   )
 )

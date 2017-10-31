@@ -1,0 +1,179 @@
+<!-- R Code -->
+<!-- Tests -->
+````{r, echo=FALSE, eval=TRUE}
+	ltld <- input$model.sim == "LD"
+	lth <- input$model.sim == "H"
+	ltln <- input$model.sim == "LN"
+	ltgam <- input$model.sim == "G"
+
+	fluct <- input$fluctsim
+	fnC <- fluct & input$distfn.sim == "NO"
+	fnln <- fluct & input$distfn.sim == "LN"
+	fngam <- fluct & input$distfn.sim == "G"
+````
+
+<!-- No Fluctuation of final counts -->
+<!-- Exponential lifetimes -->
+````{r, echo=(ltld)&(!lth)&(!ltln)&(!ltgam)&(!fluct) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("exp")
+)$mc
+````
+
+<!-- Constant lifetimes -->
+````{r, echo=(!ltld)&(lth)&(!ltln)&(!ltgam)&(!fluct) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("dirac")
+)$mc
+````
+
+<!-- Log-normal lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(ltln)&(!ltgam)&(!fluct) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("lnorm", meanlog = meanlog, sdlog = sdlog)
+)$mc
+````
+<!-- Gamma lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(!ltln)&(ltgam)&(!fluct) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("gamma", slthape = slthape, scale = scale )
+)$mc
+````
+
+
+<!-- Fluctuation of final counts (constant)-->
+<!-- Exponential lifetimes -->
+````{r, echo=(ltld)&(!lth)&(!ltln)&(!ltgam)&(fnC) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("exp"),
+	 mfn = mfn
+)
+````
+
+<!-- Constant lifetimes -->
+````{r, echo=(!ltld)&(lth)&(!ltln)&(!ltgam)&(fnC) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("dirac"),
+	 mfn = mfn
+)
+````
+
+<!-- Log-normal lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(ltln)&(!ltgam)&(fnC) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("lnorm", meanlog = meanlog, sdlog = sdlog),
+	 mfn = mfn
+)
+````
+<!-- Gamma lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(!ltln)&(ltgam)&(fnC) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("gamma", slthape = slthape, scale = scale ),
+	 mfn = mfn
+)
+````
+
+<!-- Fluctuation of final counts (Log-normal)-->
+<!-- Exponential lifetimes -->
+````{r, echo=(ltld)&(!lth)&(!ltln)&(!ltgam)&(fnln) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("exp"),
+	 distfn = "lnorm",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+
+<!-- Constant lifetimes -->
+````{r, echo=(!ltld)&(lth)&(!ltln)&(!ltgam)&(fnln) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("dirac"),
+	 distfn = "lnorm",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+
+<!-- Log-normal lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(ltln)&(!ltgam)&(fnln) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("lnorm", meanlog = meanlog, sdlog = sdlog),
+	 distfn = "lnorm",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+<!-- Gamma lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(!ltln)&(ltgam)&(fnln) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("gamma", slthape = slthape, scale = scale ),
+	 distfn = "lnorm",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+
+
+<!-- Fluctuation of final counts (Gamma)-->
+<!-- Exponential lifetimes -->
+````{r, echo=(ltld)&(!lth)&(!ltln)&(!ltgam)&(fngam) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("exp"),
+	 distfn = "gamma",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+
+<!-- Constant lifetimes -->
+````{r, echo=(!ltld)&(lth)&(!ltln)&(!ltgam)&(fngam) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("dirac"),
+	 distfn = "gamma",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+
+<!-- Log-normal lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(ltln)&(!ltgam)&(fngam) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("lnorm", meanlog = meanlog, sdlog = sdlog),
+	 distfn = "gamma",
+	 mfn = mfn, cvfn = cvfn
+)
+````
+<!-- Gamma lifetimes -->
+````{r, echo=(!ltld)&(!lth)&(!ltln)&(ltgam)&(fngam) ,eval=FALSE}
+rflan(n = size,
+	 mutations = mut, fitness = fitness,
+	 death = death, plateff = plateff,
+	 dist = list("gamma", slthape = slthape, scale = scale ),
+	 distfn = "gamma",
+	 mfn = mfn, cvfn = cvfn
+)
+````
