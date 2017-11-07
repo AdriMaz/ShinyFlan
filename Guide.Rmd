@@ -1,23 +1,20 @@
 
 <!-- A pdf version is available [here](Manual.pdf) -->
 
+Different user-friendly tools for fluctuation analysis are available online
+[1, 2 ,7]. However, their settings are quite restrictive: exponential growth model, constant final number of cells...
+
 The R package **flan** ([3], available on [CRAN](https://cran.r-project.org/package=flan)) provides tools for
 fluctuation analysis of mutant cell counts. It includes functions dedicated to the distribution of final numbers of mutant cells. Parametric estimation and hypothesis testing are also implemented, enabling inference on different sorts of data with several possible methods, under different model assumptions.
+Since many settings are possible with **flan**, its usage can be quite complicated and confusing, in particular for user who are uninitiated or beginner in R.
 
-Other user-friendly tools for fluctuation analysis already exist
-[1, 2 ,3]. However, the choice of the theoretical model is quite restrictive.
-Thus **flan** should be used instead. Since many choices are possible with **flan**, its usage can be quite complicated and confusing, specially for user who are uninitiated or beginner in R. In that sense, the web tool **ShinyFlan** developed with the R package **shiny** allows to use **flan** without knowledge in R.
-
-<!--
-All the main features of **flan** are available: in particular, statistical tests can be performed directly loading data. The different parameters which can be set are explicit. The application produces a pdf report containing the main features and a brief statistical interpretation of the data.
- -->
+In that sense, the web tool **ShinyFlan** developed with the R package **shiny** allows to use **flan** without knowledge in R.
 
 ***
 ## Hypothesis testing
-The first panel is dedicated to one-sample and two-sample tests (i.e. the function `flan.test` of **flan**).
+The first panel is dedicated to one-sample and two-sample tests (`flan.test` of **flan**).
 
 ### Data File
-
 ```{r, echo=FALSE}
 require(magrittr, quietly = TRUE)
 mccsv <- readLines("mc.csv") %>%
@@ -41,10 +38,10 @@ Moreover, a histogram of the mutant counts is plotted.
 ### Settings
 
 All the inputs of the `flan.test` function can be set:
-+ The user can set the value of death parameter, platting efficiency or the fitness (if **Unknown fitness** is not marked) in the appropriate text boxes under the sample.
-+ Even if the mutant counts are not coupled with final number of cells, it is possible to consider the case where the final number of cell is random. When the checkbox is marked, the user can set the value of the mean and the coefficient of variation (ratio of the standard deviation to the mean) using the appropriate text boxes.
-+ When **Random final counts** is checked, the mutation probability is considered instead of the mean number of mutations.
-+ For two-sample tests, the above settings can be different between the two samples.
++ The user can set the value of **Death parameter**, **Platting efficiency** or the **Fitness** (if **Unknown fitness** is unmarked) in the appropriate text boxes under the sample.
++ Even if the mutant counts are not coupled with final number of cells, it is possible to consider the case where the final number of cell is random. When **Random final counts** is marked, the user can set the value of the **Mean final number** and the **Coefficient of variation** (ratio of the standard deviation to the mean) of cells using the appropriate text boxes.
++ If mutant counts are coupled with final numbers of cells or when **Random final counts** is checked, the mutation probability is considered instead of the mean number of mutations.
++ When **Two sample test** is checked, the above settings can be different for the two samples.
 + Two growth model are available:
   * Luria-Delbrück model (**LD**): the lifetime of any mutant cell is assumed to be exponential;
   * Haldane model (**H**): the lifetime of any mutant cell is assumed to be constant.
@@ -52,7 +49,7 @@ All the inputs of the `flan.test` function can be set:
   * Maximum Likelihood method (**ML**);
   * Generating Function method (**GF**) [3];
   * P0 method (**P0**) [4].
-+ When ML or P0 method is selected, the Winsorization is applied: it consists in truncating the sample beyond some maximal value (**Winsor parameter**).
++ When ML or P0 method is selected, likelihood optimization can be very long and numerically unstable. One way to reduce these tail effects is the Winsorization [6, Sec 2.2]: it consists in truncating the sample beyond some maximal value (**Winsor parameter**).
 + The user can also choose the null values and the alternative hypotheses for the mutation number/probability and the fitness (if **Unknown fitness** is checked), and the level of the confidence intervals.
 + Histograms describing the mutant counts are exposed. It is possible to modify the number of classes and the maximal value.
 
@@ -66,17 +63,17 @@ Moreover, a pdf file which summarize the data, the settings, the result and the 
 
 ***
 ## Simulation
-The second panel is dedicated to the simulation of mutant counts under different assumptions (i.e. the function `rflan` of **flan**).
+The second panel is dedicated to the simulation of mutant counts under different assumptions (function `rflan` of **flan**).
 
 ### Parameters
 Different parameters are available for the simulation. Here are some details:
 + Four distributions are possible for mutant lifetime:
-  * Exponential distribution: the lifetime of any mutant cell is assumed to be exponential;
-  * Constant lifetimes: the lifetime of any mutant cell is assumed to be constant;
-  * Log-Normal distribution: in that case, the user has to set the mean and standard deviation of the distribution on the log-scale;
-  * Gamma distribution: in that case, the user has to set the shape and the scale of the distribution.
+  * **Exponential** distribution: the lifetime of any mutant cell is assumed to be exponential;
+  * **Constant** lifetimes: the lifetime of any mutant cell is assumed to be constant;
+  * **Log-Normal** distribution: in that case, the user has to set the mean and standard deviation of the distribution on the log-scale;
+  * **Gamma** distribution: in that case, the user has to set the shape and the scale of the distribution.
 + Whatever the choice of the distribution, its parameter will be adjusted in order to get a unit growth rate. In particular, the rate for the exponential case and the location for the constant case are directly adjusted according to the **Death parameter**.
-+ It is possible to sample final number of cells. Three cases are possible:
++ If **Random final counts** is checked, final numbers of cells are also sampled. Three cases are possible:
   * Constant final number of cells;
   * Log-Normal distributed final number of cells;
   * Gamma distributed final number of cells.
@@ -89,13 +86,18 @@ Moreover, a histogram of the mutant counts is plotted. The theoretical distribut
 
 ### Estimation
 
-The user can also perform parametric estimation (i.e. the `mutestim` function of **flan**) on the simulated sample. The available settings are the same as in the first panel. The estimated distribution can also be added to the histogram (the graphic settings are the same as in the first panel).
+The user can also perform parametric estimation (function `mutestim` of **flan**) on the simulated sample. The available settings are the same as in the first panel. The estimated distribution can also be added to the histogram (the graphic settings are the same as in the first panel).
+
+***
+## Contact
+For any question, remark, or bug, please feel free to send a mail at [adrien.mazoyer(at)univ-grenoble-alpes.fr](mailto:adrien.mazoyer@univ-grenoble-alpes.fr) or to report it [here](https://github.com/AdriMaz/ShinyFlan/issues).
 
 ***
 ## References
-[1] A. Gillet-Markowska and G. Louvel and G. Fisher. _**bz-rates**: a web-tool to estimate mutation rates from fluctuation analysis._ In: _G3_ **5**(11) (2015), pp. 2323--2327.      
-[2] B.M. Hall and C.X. Ma and P. Liang and K.K. Singh. _**F**luctuation **A**na**L**ysis **C**alculat**OR**: a web tool for the determination of mutation rate using Luria–Delbrück fluctuation analysis._ In: _Bioinformatics_ **25**(12) (2009), pp. 1564--1565.      
-[3] A. Hamon and B. Ycart. _Statistics for the Luria-Delbrück distribution._ In: _Elect. J. Statist._ **6** (2012), pp. 1251--1272.   
-[4] S.E. Luria and M. Delbrück. _Mutations of bacteria from virus sensitivity to virus resistance._ In: Genetics **28**(6) (1943), pp 491--511.
-[5] A. Mazoyer and R. Drouilhet and S. Despréaux and B. Ycart. _**flan**: An R package for inference on mutation models._ In: R J. **9**(1) (2017).   
-[6] Q. Zheng. _Statistical and algorithmic methods for fluctuation analysis with **SALVADOR** as an implementation._ In: _Math. Biosci._ **176**(2) (2002), pp. 237--252.   
+[1] A. Gillet-Markowska and G. Louvel and G. Fisher. (2015). **bz-rates**: a web-tool to estimate mutation rates from fluctuation analysis. In: _G3_ **5**(11), pp. 2323--2327.      
+[2] B.M. Hall and C.X. Ma and P. Liang and K.K. Singh. (2009). **F**luctuation **A**na**L**ysis **C**alculat**OR**: a web tool for the determination of mutation rate using Luria–Delbrück fluctuation analysis. In: _Bioinformatics_ **25**(12), pp. 1564--1565.      
+[3] A. Hamon and B. Ycart. (2012). Statistics for the Luria-Delbrück distribution. In: _Elect. J. Statist._ **6** pp. 1251--1272.   
+[4] S.E. Luria and M. Delbrück. (1943). Mutations of bacteria from virus sensitivity to virus resistance. In: Genetics **28**(6), pp 491--511.
+[5] A. Mazoyer and R. Drouilhet and S. Despréaux and B. Ycart. (2017). **flan**: An R package for inference on mutation models. In: R J. **9**(1) (2017).   
+[6] R. Wilcox. (2012). _Introduction to Robust Estimation and Hypothesis Testing_. 3rd ed. Elsevier, Amsterdam.   
+[7] Q. Zheng. (2002). Statistical and algorithmic methods for fluctuation analysis with **SALVADOR** as an implementation. In: _Math. Biosci._ **176**(2), pp. 237--252.   

@@ -21,11 +21,12 @@ shinyUI(
               uiOutput(outputId = "launchtest")
       	    ),
             column(3,
-              uiOutput(outputId = "dlbutton")
-    	      ),
+              # uiOutput(outputId = "refresh")
+              actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
+      	    ),
             column(3,
-              uiOutput(outputId = "cleanall")
-      	    )
+              uiOutput(outputId = "dlbutton")
+    	      )
             # ,
             # column(3,
             #   uiOutput(outputId = "showcode")
@@ -201,7 +202,7 @@ shinyUI(
           fluidRow(
             column(6,
               numericInput(inputId = "nclass1", label = "Number of class",
-                min = 1, value = 10)
+                min = 1, value = 100)
             ),
             column(6,
               numericInput(inputId = "max.plot1", label = "Maximal value",
@@ -212,7 +213,7 @@ shinyUI(
             fluidRow(
               column(6,
                 numericInput(inputId = "nclass2", label = "Number of class (Sample 2)",
-                  min = 1, value = 10)
+                  min = 1, value = 100)
               ),
               column(6,
                 numericInput(inputId = "max.plot2", label = "Maximal value (Sample 2)",
@@ -244,12 +245,12 @@ shinyUI(
       	    ),
             conditionalPanel(condition = "input.fluct",
         	    column(2,
-  	            textInput(inputId = "mfn1", "Mean Final Number of cells",
-    		          value = 0
+  	            textInput(inputId = "mfn1", "Mean final number of cells",
+    		          value = 1e9
     	          )
   	          ),
       	      column(3,
-      	        textInput(inputId = "cvfn1", "Coef. Variation final number of cells",
+      	        textInput(inputId = "cvfn1", "Coef. variation final number of cells",
     		          value = 0
       	        )
         	    )
@@ -284,7 +285,7 @@ shinyUI(
               conditionalPanel(condition = "input.fluct",
         	      column(2,
               		textInput(inputId = "mfn2", "Mean final number of cells",
-              		  value = 0
+              		  value = 1e9
               		)
         	      ),
         	      column(3,
@@ -347,6 +348,9 @@ shinyUI(
             fluidRow(
               column(3,
                 actionButton(inputId = "sim", label = tags$strong("Sample"))
+              ),
+              column(3,
+                actionButton(inputId = "refresh.sim", label = tags$strong("Refresh all"))
               ),
               column(3,
                 uiOutput(outputId = "est.sim")
@@ -423,7 +427,7 @@ shinyUI(
               fluidRow(
                 column(4,
                   selectInput(inputId = "distfn.sim", label = "Distribution of final number of cells",
-                    choices = c("Constant" = "NO", "Log-Normal" = "LN", "Gamma" = "G")
+                    choices = c("Constant" = "C", "Log-Normal" = "LN", "Gamma" = "G")
                   )
                 ),
                 column(4,
@@ -431,7 +435,7 @@ shinyUI(
                 ),
                 # conditionalPanel(condition = "input.distfn.sim != 'NO'",
                 column(4,
-                    # textInput(inputId = "cvfn.sim", label = "Coef. Variation final number of cells", value = 0)
+                    # textInput(inputId = "cvfn.sim", label = "Coef. variation final number of cells", value = 0)
                   uiOutput(outputId = "cvfn.sim")
                 )
               )
@@ -488,7 +492,7 @@ shinyUI(
           	fluidRow(
           	  column(6,
           	    numericInput(inputId = "nclass.sim", label = "Number of class",
-          	      min = 1, value = 10)
+          	      min = 1, value = 100)
           	  ),
               column(6,
                 numericInput(inputId = "max.sim", label = "Max value",
