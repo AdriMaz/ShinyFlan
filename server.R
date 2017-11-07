@@ -20,7 +20,7 @@ shinyServer(function(input, output, session) {
      }
 
 
-## Reactive for selection file
+     ## Reactive for selection file
   inFile1 <- reactive({
     file <- input$sample1
     if(is.null(file) | is.null(RV$file1_state)) {
@@ -57,7 +57,7 @@ shinyServer(function(input, output, session) {
   })
 
 
-## Table of Sample1
+  ## Table of Sample1
   output$contents1 <- renderTable({
     # validate(need(!is.null(inFile1()), "Please load data set"))
     validate(need(RV$file1_state == "uploaded", "Please load data set"))
@@ -89,7 +89,7 @@ shinyServer(function(input, output, session) {
     if(length(RV$data1) == 2) {
       updateCheckboxInput(session, "fluct", value = TRUE)
       fn  <- RV$data1[[2]]
-## Default value of mfn and cvfn if sample with final count
+      ## Default value of mfn and cvfn if sample with final count
       updateTextInput(session, "mfn1", value = mean(fn))
       updateTextInput(session, "cvfn1", value = sd(fn)/mean(fn))
     }
@@ -142,293 +142,296 @@ shinyServer(function(input, output, session) {
 
 
 
-## When hypothesis test is launched
-observeEvent(input$launchtest, {
-  ## Necessary conditions to perform test
-  validate(
-  	need(!is.null(inFile1()) || (input$twosample & !is.null(inFile1()) & !is.null(inFile2())), "Please load data set"),
+  ## When hypothesis test is launched
+  observeEvent(input$launchtest, {
+    ## Necessary conditions to perform test
+    validate(
+    	need(!is.null(inFile1()) || (input$twosample & !is.null(inFile1()) & !is.null(inFile2())), "Please load data set"),
 
-  	need(as.numeric(input$plateff1) >= 0 & as.numeric(input$plateff1) <= 1 & as.numeric(input$plateff2) >=0 & as.numeric(input$plateff2) <= 1, "Plating efficiency must be non-negative and <= 1 number."),
+    	need(as.numeric(input$plateff1) >= 0 & as.numeric(input$plateff1) <= 1 & as.numeric(input$plateff2) >=0 & as.numeric(input$plateff2) <= 1, "Plating efficiency must be non-negative and <= 1 number."),
 
-  	need(as.numeric(input$fitvalue1) >= 0 & as.numeric(input$fitvalue2) >= 0, "Fitness must be non-negative number."),
+    	need(as.numeric(input$fitvalue1) >= 0 & as.numeric(input$fitvalue2) >= 0, "Fitness must be non-negative number."),
 
-  	need(as.numeric(input$death1) >= 0 & as.numeric(input$death1) <= 1 & as.numeric(input$death2) >=0 & as.numeric(input$death2) <= 1, "Death parameter must be a non-negative and <= 1 number."),
+    	need(as.numeric(input$death1) >= 0 & as.numeric(input$death1) <= 1 & as.numeric(input$death2) >=0 & as.numeric(input$death2) <= 1, "Death parameter must be a non-negative and <= 1 number."),
 
-  	need(as.numeric(input$mfn1) >= 0 & as.numeric(input$mfn2) >= 0, "Mean final number must be a non-negative number."),
+    	need(as.numeric(input$mfn1) >= 0 & as.numeric(input$mfn2) >= 0, "Mean final number must be a non-negative number."),
 
-  	need(as.numeric(input$cvfn1) >= 0 & as.numeric(input$cvfn2) >= 0, "Coef. variation final number must be a non-negative number."),
+    	need(as.numeric(input$cvfn1) >= 0 & as.numeric(input$cvfn2) >= 0, "Coef. variation final number must be a non-negative number."),
 
-  	need(as.numeric(input$conflevel) >= 0 & as.numeric(input$conflevel) <= 1, "Confidence level must be a non-negative and <= 1 number"),
+    	need(as.numeric(input$conflevel) >= 0 & as.numeric(input$conflevel) <= 1, "Confidence level must be a non-negative and <= 1 number"),
 
-  	need(as.numeric(input$winsor) >= 0, "Winsor parameter must be a non-negative number"),
+    	need(as.numeric(input$winsor) >= 0, "Winsor parameter must be a non-negative number"),
 
-  	need(as.numeric(input$mut0) >= 0, "Null mutations number must be a non-negative number"),
+    	need(as.numeric(input$mut0) >= 0, "Null mutations number must be a non-negative number"),
 
-  	need(as.numeric(input$mutprob0) >= 0 & as.numeric(input$mutprob0) < 1, "Null mutation probability must be a non-negative and <= 1 number"),
+    	need(as.numeric(input$mutprob0) >= 0 & as.numeric(input$mutprob0) < 1, "Null mutation probability must be a non-negative and <= 1 number"),
 
-  	need(as.numeric(input$fit0) >= 0, "Null fitness must be a non-negative number")
-  )
-  # toggle("report")
-  # toggle("report2")
-  # toggle("refresh")
-  # toggle("refresh")
-  # toggle("showcode")
+    	need(as.numeric(input$fit0) >= 0, "Null fitness must be a non-negative number")
+    )
+    # toggle("report")
+    # toggle("report2")
+    # toggle("refresh")
+    # toggle("refresh")
+    # toggle("showcode")
 
-  if (is.null(inFile1())) return(NULL)
+    if (is.null(inFile1())) return(NULL)
 
-  fit <- if(input$estfit) NULL else as.numeric(input$fitvalue1)
+    fit <- if(input$estfit) NULL else as.numeric(input$fitvalue1)
 
-  death <- as.numeric(input$death1)
-  plateff <- as.numeric(input$plateff1)
+    death <- as.numeric(input$death1)
+    plateff <- as.numeric(input$plateff1)
 
-  # alt <- input$mutalt
-  alt <- if(input$twosample){
-    if(!input$fluct) input$mutdiffalt else input$mutprobdiffalt
-  } else {
-    if(!input$fluct) input$mutalt else input$mutprobalt
-  }
+    # alt <- input$mutalt
+    alt <- if(input$twosample){
+      if(!input$fluct) input$mutdiffalt else input$mutprobdiffalt
+    } else {
+      if(!input$fluct) input$mutalt else input$mutprobalt
+    }
 
 
-  if(is.null(fit)) alt <- c(alt,if(input$twosample) input$fitdiffalt else input$fitalt)
-  clevel <- as.numeric(input$conflevel)
-  winsor <- as.numeric(input$winsor)
+    if(is.null(fit)) alt <- c(alt,if(input$twosample) input$fitdiffalt else input$fitalt)
+    clevel <- as.numeric(input$conflevel)
+    winsor <- as.numeric(input$winsor)
 
-  if(!input$twosample){
+    if(!input$twosample){
 
-    mc <- RV$data1[[1]]
-    fn <- if(length(RV$data1) == 2) RV$data1[[2]] else NULL
+      mc <- RV$data1[[1]]
+      fn <- if(length(RV$data1) == 2) RV$data1[[2]] else NULL
 
-    mfn <- if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)}
-    cvfn <- if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)}
+      mfn <- if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)}
+      cvfn <- if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)}
 
-    fit0 <- if(is.null(fit)) as.numeric(input$fit0) else NULL
-    # RV$res
-    test <- withWarnings(if(is.null(fn)){
-            		if(is.null(mfn)){
-            		  flan.test(mc = mc,
-            		    fitness = fit, death = death, plateff = plateff,
-            		    model = input$model,
-            		    mutations0 = as.numeric(input$mut0), fitness0 = fit0,
-            		    conf.level = clevel,
-            		    alternative = alt, method = input$method,
-            		    winsor = winsor
-            		  )
-            		} else {
-            		  flan.test(mc = mc, mfn = mfn, cvfn = cvfn,
+      fit0 <- if(is.null(fit)) as.numeric(input$fit0) else NULL
+      # RV$res
+      test <- withWarnings(if(is.null(fn)){
+              		if(is.null(mfn)){
+              		  flan.test(mc = mc,
+              		    fitness = fit, death = death, plateff = plateff,
+              		    model = input$model,
+              		    mutations0 = as.numeric(input$mut0), fitness0 = fit0,
+              		    conf.level = clevel,
+              		    alternative = alt, method = input$method,
+              		    winsor = winsor
+              		  )
+              		} else {
+              		  flan.test(mc = mc, mfn = mfn, cvfn = cvfn,
+              		    fitness = fit, death = death, plateff = plateff,
+              		    model = input$model,
+              		    mutprob0 = as.numeric(input$mutprob0), fitness0 = fit0,
+              		    conf.level = clevel,
+              		    alternative = alt, method = input$method,
+              		    winsor = winsor
+              		  )
+              		}
+                } else {
+            		  flan.test(mc = mc, fn = fn,
             		    fitness = fit, death = death, plateff = plateff,
             		    model = input$model,
             		    mutprob0 = as.numeric(input$mutprob0), fitness0 = fit0,
             		    conf.level = clevel,
             		    alternative = alt, method = input$method,
             		    winsor = winsor
-            		  )
-            		}
-              } else {
-          		  flan.test(mc = mc, fn = fn,
-          		    fitness = fit, death = death, plateff = plateff,
-          		    model = input$model,
-          		    mutprob0 = as.numeric(input$mutprob0), fitness0 = fit0,
-          		    conf.level = clevel,
-          		    alternative = alt, method = input$method,
-          		    winsor = winsor
-        		    )
-      	      })
-  } else {
-    if (is.null(inFile2())) return(NULL)
+          		    )
+        	      })
+    } else {
+      if (is.null(inFile2())) return(NULL)
 
-    fit <-  if(!input$estfit) c(fit,as.numeric(input$fitvalue2)) else NULL
+      fit <-  if(!input$estfit) c(fit,as.numeric(input$fitvalue2)) else NULL
 
-    fit0 <- if(is.null(fit)) as.numeric(input$fitdiff0) else NULL
+      fit0 <- if(is.null(fit)) as.numeric(input$fitdiff0) else NULL
 
-    death <- c(death,as.numeric(input$death2)) ; plateff <- c(plateff, as.numeric(input$plateff2))
-    mc <- list(mc1 = RV$data1[[1]], mc2 = RV$data2[[1]])
-    fn <- list(fn1 = if(length(RV$data1) == 2) RV$data1[[2]] else NULL,
-               fn2 = if(length(RV$data2) == 2) RV$data2[[2]] else NULL)
+      death <- c(death,as.numeric(input$death2)) ; plateff <- c(plateff, as.numeric(input$plateff2))
+      mc <- list(mc1 = RV$data1[[1]], mc2 = RV$data2[[1]])
+      fn <- list(fn1 = if(length(RV$data1) == 2) RV$data1[[2]] else NULL,
+                 fn2 = if(length(RV$data2) == 2) RV$data2[[2]] else NULL)
+
+      mfn <- list(if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
+                  if(!input$fluct) NULL else {if(as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
+
+      cvfn <- list(if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
+                   if(!input$fluct) NULL else {if((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
 
 
-    mfn <- list(if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
-                if(!input$fluct) NULL else {if(as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
+      if(is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
+      if(is.null(mfn[[1]]) & is.null(mfn[[2]])) mfn <- NULL
+      if(is.null(cvfn[[1]]) & is.null(cvfn[[2]])) cvfn <- NULL
 
-    cvfn <- list(if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
-                 if(!input$fluct) NULL else {if((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
-
-
-    if(is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
-    if(is.null(mfn[[1]]) & is.null(mfn[[2]])) mfn <- NULL
-    if(is.null(cvfn[[1]]) & is.null(cvfn[[2]])) cvfn <- NULL
-
-    test <- withWarnings(if(is.null(fn)){
-          	    if(is.null(mfn)){
-          	      flan.test(mc = mc,
-                    fitness = fit, death = death, plateff = plateff,
-                    model = input$model,
-                    mutations0 = as.numeric(input$mutdiff0), fitness0 = fit0,
-                    conf.level = clevel,
-                    alternative = alt, method = input$method,
-                    winsor = winsor
+      test <- withWarnings(if(is.null(fn)){
+            	    if(is.null(mfn)){
+            	      flan.test(mc = mc,
+                      fitness = fit, death = death, plateff = plateff,
+                      model = input$model,
+                      mutations0 = as.numeric(input$mutdiff0), fitness0 = fit0,
+                      conf.level = clevel,
+                      alternative = alt, method = input$method,
+                      winsor = winsor
+                    )
+          	      } else {
+            	      flan.test(mc = mc, mfn = mfn, cvfn = cvfn,
+                      fitness = fit, death = death, plateff = plateff,
+                      model = input$model,
+                      mutprob0 = as.numeric(input$mutprobdiff0), fitness0 = fit0,
+                      conf.level = clevel,
+                      alternative = alt, method = input$method,
+                      winsor = winsor
+                    )
+          	      }
+          	    } else {
+          	      flan.test(mc = mc, fn = fn,
+                          mfn = mfn, cvfn = cvfn,
+                          fitness = fit, death = death, plateff = plateff,
+                          model = input$model,
+                          mutprob0 = as.numeric(input$mutprobdiff0), fitness0 = fit0,
+                          conf.level = clevel,
+                          alternative = alt, method = input$method,
+                          winsor = winsor
                   )
-        	      } else {
-          	      flan.test(mc = mc, mfn = mfn, cvfn = cvfn,
-                    fitness = fit, death = death, plateff = plateff,
-                    model = input$model,
-                    mutprob0 = as.numeric(input$mutprobdiff0), fitness0 = fit0,
-                    conf.level = clevel,
-                    alternative = alt, method = input$method,
-                    winsor = winsor
-                  )
-        	      }
-        	    } else {
-        	      flan.test(mc = mc, fn = fn,
-                        mfn = mfn, cvfn = cvfn,
-                        fitness = fit, death = death, plateff = plateff,
-                        model = input$model,
-                        mutprob0 = as.numeric(input$mutprobdiff0), fitness0 = fit0,
-                        conf.level = clevel,
-                        alternative = alt, method = input$method,
-                        winsor = winsor
-                )
-              })
- }
+                })
+   }
 
- RV$res <- test$val
- RV$warn <- test$warnings
- RV$show_res <- TRUE
-}
-)
-
-
-observeEvent(input$estfit,{
-  if(!is.null(RV$res)){
-    RV$res <- c()
-    RV$warn <- c()
-    RV$show_res <- FALSE
+   RV$res <- test$val
+   RV$warn <- test$warnings
+   RV$show_res <- TRUE
   }
-})
+  )
 
 
-observeEvent(input$fluct,{
-  if(!is.null(RV$res)){
-    RV$res <- c()
-    RV$warn <- c()
-    RV$show_res <- FALSE
-  }
-})
-
-output$launchtest <- renderUI({
-  if((!input$twosample & !is.null(RV$data1)) || (input$twosample & !is.null(RV$data1) & !is.null(RV$data2))) {
-    actionButton(inputId = "launchtest", label = tags$strong("Perform test"))
-  }
+  observeEvent(input$estfit,{
+    if(!is.null(RV$res)){
+      RV$res <- c()
+      RV$warn <- c()
+      RV$show_res <- FALSE
+    }
   })
 
-#
-# output$refresh <- renderUI({
-#   if(RV$show_res) actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
-#   # actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
-# })
 
-output$dlbutton <- renderUI(
-      if(RV$show_res) downloadButton(outputId = "report", label = tags$strong("Report"))
-)
+  observeEvent(input$fluct,{
+    if(!is.null(RV$res)){
+      RV$res <- c()
+      RV$warn <- c()
+      RV$show_res <- FALSE
+    }
+  })
 
-observeEvent(input$refresh, {
+  output$launchtest <- renderUI({
+    if((!input$twosample & !is.null(RV$data1)) || (input$twosample & !is.null(RV$data1) & !is.null(RV$data2))) {
+      actionButton(inputId = "launchtest", label = tags$strong("Perform test"))
+    }
+    })
 
-  updateTextInput(session, "death1", value = 0)
-  updateTextInput(session, "plateff1", value = 1)
-  if(length(RV$data1) == 1){
-    updateTextInput(session, "mfn1", value = 0)
-    updateTextInput(session, "cvfn1", value = 0)
-  }
-  updateTextInput(session, "fitvalue1", value = 1)
-  updateTextInput(session, "death2", value = 0)
-  updateTextInput(session, "plateff2", value = 1)
-  if(length(RV$data2) == 2){
-    updateTextInput(session, "mfn2", value = 0)
-    updateTextInput(session, "cvfn2", value = 0)
-  }
-  updateTextInput(session, "fitvalue2", value = 1)
+  #
+  # output$refresh <- renderUI({
+  #   if(RV$show_res) actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
+  #   # actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
+  # })
 
-  updateTextInput(session, "winsor", value = 1024)
-  updateTextInput(session, "mut0", value = 1)
-  updateTextInput(session, "fit0", value = 1)
-  updateTextInput(session, "mutprob0", value = 1e-9)
-  updateTextInput(session, "mutdiff0", value = 0)
-  updateTextInput(session, "fitdiff0", value = 0)
-  updateTextInput(session, "mutprobdiff0", value = 0)
-  updateTextInput(session, "conflevel", value = 0.95)
+  output$dlbutton <- renderUI(
+        if(RV$show_res) downloadButton(outputId = "report", label = tags$strong("Report"))
+  )
 
-  updateCheckboxInput(session, "header", value = TRUE)
-  updateCheckboxInput(session, "estfit", value = TRUE)
-  updateCheckboxInput(session, "twosample", value = FALSE)
-  updateCheckboxInput(session, "fluct", value = FALSE)
+  observeEvent(input$refresh, {
 
-  updateSelectInput(session, "model", label = "Distribution of mutant lifetime",
-                    choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H")
-                   )
-  updateSelectInput(session, "method", label = "Estimation Method",
-                    choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
-                   )
+    updateTextInput(session, "death1", value = 0)
+    updateTextInput(session, "plateff1", value = 1)
+    if(length(RV$data1) == 1){
+      updateTextInput(session, "mfn1", value = 0)
+      updateTextInput(session, "cvfn1", value = 0)
+    }
+    updateTextInput(session, "fitvalue1", value = 1)
+    updateTextInput(session, "death2", value = 0)
+    updateTextInput(session, "plateff2", value = 1)
+    if(length(RV$data2) == 2){
+      updateTextInput(session, "mfn2", value = 0)
+      updateTextInput(session, "cvfn2", value = 0)
+    }
+    updateTextInput(session, "fitvalue2", value = 1)
 
-  updateSelectInput(session, "mutalt", label = "Mutation number", choices = c("≠" = "two.sided", ">" = "greater", "<" = "less"))
-  updateSelectInput(session, "fitalt", label = "Fitness", choices = c("≠" = "two.sided", ">" = "greater", "<" = "less"))
+    updateTextInput(session, "winsor", value = 1024)
+    updateTextInput(session, "mut0", value = 1)
+    updateTextInput(session, "fit0", value = 1)
+    updateTextInput(session, "mutprob0", value = 1e-9)
+    updateTextInput(session, "mutdiff0", value = 0)
+    updateTextInput(session, "fitdiff0", value = 0)
+    updateTextInput(session, "mutprobdiff0", value = 0)
+    updateTextInput(session, "conflevel", value = 0.95)
 
-  updateNumericInput(session, "nclass1", value = 100)
-  updateNumericInput(session, "max.plot1", value = 100)
-  updateNumericInput(session, "nclass2", value = 100)
-  updateNumericInput(session, "max.plot2", value = 100)
+    updateCheckboxInput(session, "header", value = TRUE)
+    updateCheckboxInput(session, "estfit", value = TRUE)
+    updateCheckboxInput(session, "twosample", value = FALSE)
+    updateCheckboxInput(session, "fluct", value = FALSE)
 
-  RV$file1_state <- "reset"
-  RV$file2_state <- "reset"
+    updateSelectInput(session, "model", label = "Distribution of mutant lifetime",
+                      choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H")
+                     )
+    updateSelectInput(session, "method", label = "Estimation Method",
+                      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
+                     )
 
-  RV$data1 <- c()
-  RV$data2 <- c()
+    updateSelectInput(session, "mutalt", label = "Mutation number",
+                      choices = c("≠" = "two.sided", ">" = "greater", "<" = "less")
+                     )
+    updateSelectInput(session, "fitalt", label = "Fitness",
+                      choices = c("≠" = "two.sided", ">" = "greater", "<" = "less")
+                     )
 
-  RV$res <- c()
-  RV$warn <- c()
+    updateNumericInput(session, "nclass1", value = 100)
+    updateNumericInput(session, "max.plot1", value = 100)
+    updateNumericInput(session, "nclass2", value = 100)
+    updateNumericInput(session, "max.plot2", value = 100)
 
-  reset("sample1")
-  reset("sample2")
+    RV$file1_state <- "reset"
+    RV$file2_state <- "reset"
 
-  RV$show_res <- FALSE
+    RV$data1 <- c()
+    RV$data2 <- c()
 
-  }
-)
+    RV$res <- c()
+    RV$warn <- c()
 
+    reset("sample1")
+    reset("sample2")
 
-output$report <- downloadHandler(filename = "Report.pdf",
-	content = function(file){
-	  out <- knit2pdf(input='Report.Rnw', output="Report.tex", clean = TRUE, quiet = TRUE)
-    # out <- knit(input='Report.Rmd', clean = TRUE)
- 	  file.copy(out, file)},
-	contentType = 'application/pdf'
-      )
+    RV$show_res <- FALSE
 
-observeEvent(input$twosample, {
-  updateTextInput(session, "mutdiff0", value = 0)
-  updateTextInput(session, "mutprobdiff0", value = 0)
-  updateTextInput(session, "fitdiff0", value = 0)
-  if(RV$show_res) RV$show_res <- FALSE
-})
-
-observeEvent(!input$twosample, {
-  updateTextInput(session, "mut0", value = 1)
-  updateTextInput(session, "mutprob0", value = 1e-9)
-  updateTextInput(session, "fit0", value = 1)
-  if(RV$show_res) RV$show_res <- FALSE
-})
+    }
+  )
 
 
-observeEvent(input$estfit, {
-  updateTextInput(session, "fitvalue1", value = 1)
-  updateTextInput(session, "fitvalue2", value = 1)
-  if(RV$show_res) RV$show_res <- FALSE
-})
+  output$report <- downloadHandler(filename = "Report.pdf",
+  	content = function(file){
+  	  out <- knit2pdf(input='Report.Rnw', output="Report.tex", clean = TRUE, quiet = TRUE)
+      # out <- knit(input='Report.Rmd', clean = TRUE)
+   	  file.copy(out, file)},
+  	contentType = 'application/pdf'
+        )
+
+  observeEvent(input$twosample, {
+    updateTextInput(session, "mutdiff0", value = 0)
+    updateTextInput(session, "mutprobdiff0", value = 0)
+    updateTextInput(session, "fitdiff0", value = 0)
+    if(RV$show_res) RV$show_res <- FALSE
+  })
+
+  observeEvent(!input$twosample, {
+    updateTextInput(session, "mut0", value = 1)
+    updateTextInput(session, "mutprob0", value = 1e-9)
+    updateTextInput(session, "fit0", value = 1)
+    if(RV$show_res) RV$show_res <- FALSE
+  })
 
 
-observeEvent(!input$estfit, {
-  updateTextInput(session, "fit0", value = 1)
-  updateTextInput(session, "fitdiff0", value = 0)
-  if(RV$show_res) RV$show_res <- FALSE
-})
+  observeEvent(input$estfit, {
+    updateTextInput(session, "fitvalue1", value = 1)
+    updateTextInput(session, "fitvalue2", value = 1)
+    if(RV$show_res) RV$show_res <- FALSE
+  })
+
+
+  observeEvent(!input$estfit, {
+    updateTextInput(session, "fit0", value = 1)
+    updateTextInput(session, "fitdiff0", value = 0)
+    if(RV$show_res) RV$show_res <- FALSE
+  })
 
   output$warn <- renderPrint({
     if(RV$show_res) {
@@ -479,66 +482,66 @@ observeEvent(!input$estfit, {
 
 
 
-output$graph1 <- renderPlot({
-  # X <- 0:input$maxX
-  validate(
-    need(RV$file1_state == "uploaded", "Please load data set"),
-    need(input$nclass1 > 0, "Number of classes must be positive number"),
-    need(input$max.plot1 > 0, "Maximal value must be positive number")
-    # need(!input$fluct, "Graphic representation for sample with random final count is not available yet...")
-  )
+  output$graph1 <- renderPlot({
+    # X <- 0:input$maxX
+    validate(
+      need(RV$file1_state == "uploaded", "Please load data set"),
+      need(input$nclass1 > 0, "Number of classes must be positive number"),
+      need(input$max.plot1 > 0, "Maximal value must be positive number")
+      # need(!input$fluct, "Graphic representation for sample with random final count is not available yet...")
+    )
 
-  # mutplot <- as.numeric(input$mut.plot)
-  # fitplot <- as.numeric(input$fit.plot)
-  # deathplot <- as.numeric(input$death.plot)
-  # pefplot <- as.numeric(input$plateff.plot)
+    # mutplot <- as.numeric(input$mut.plot)
+    # fitplot <- as.numeric(input$fit.plot)
+    # deathplot <- as.numeric(input$death.plot)
+    # pefplot <- as.numeric(input$plateff.plot)
 
 
-  # if(!is.null(inFile1())){
-  if(!is.null(RV$data1)){
-    # validate(need(length(RV$data1) == 1 | (input$mfn1 == 0 & input$cvfn1 == 0), "Graphic representation for sample with random final count is not available yet..."))
+    # if(!is.null(inFile1())){
+    if(!is.null(RV$data1)){
+      # validate(need(length(RV$data1) == 1 | (input$mfn1 == 0 & input$cvfn1 == 0), "Graphic representation for sample with random final count is not available yet..."))
 
-    mc <- RV$data1[[1]]
-    X <- 0:max(mc)
-    # updateNumericInput(session, "maxX", value = max(mc))
-    hist(mc, nclass = input$nclass1, probability = TRUE,
-       ylab = "", main = "Empirical distribution of Sample 1", xlab = "Mutant count", cex.lab = 1.5,
-       col = "blue3", cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.plot1))
-    leg <- "Sample 1"
-    col <- "blue3"
-    # pch <- 0
-    if(!is.null(RV$res)) {
-      if(!input$twosample){
-        mut <- RV$res$estimate[1]
-        fit <- if(input$estfit) RV$res$estimate[2] else as.numeric(input$fitvalue1)
-      } else {
-        mut <- RV$res$estimate[1,1]
-        fit <- if(input$estfit) RV$res$estimate[1,2] else as.numeric(input$fitvalue1)
+      mc <- RV$data1[[1]]
+      X <- 0:max(mc)
+      # updateNumericInput(session, "maxX", value = max(mc))
+      hist(mc, nclass = input$nclass1, probability = TRUE,
+         ylab = "", main = "Empirical distribution of Sample 1", xlab = "Mutant count", cex.lab = 1.5,
+         col = "blue3", cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.plot1))
+      leg <- "Sample 1"
+      col <- "blue3"
+      # pch <- 0
+      if(!is.null(RV$res)) {
+        if(!input$twosample){
+          mut <- RV$res$estimate[1]
+          fit <- if(input$estfit) RV$res$estimate[2] else as.numeric(input$fitvalue1)
+        } else {
+          mut <- RV$res$estimate[1,1]
+          fit <- if(input$estfit) RV$res$estimate[1,2] else as.numeric(input$fitvalue1)
+        }
+        names(mut) <- NULL ; names(fit) <- NULL
+        if(!input$fluct){
+          lines(X,dflan(X,mutations = mut,
+                        fitness = fit, death = as.numeric(input$death1), plateff = as.numeric(input$plateff1),
+                        model = input$model), col = "goldenrod3", lwd = 3)
+
+          leg <- c(leg, "Estimated distribution of Sample 1")
+          col <- c(col, "goldenrod3")
+        }
+        # pch <- c(pch, "")
       }
-      names(mut) <- NULL ; names(fit) <- NULL
-      if(!input$fluct){
-        lines(X,dflan(X,mutations = mut,
-                      fitness = fit, death = as.numeric(input$death1), plateff = as.numeric(input$plateff1),
-                      model = input$model), col = "goldenrod3", lwd = 3)
-
-        leg <- c(leg, "Estimated distribution of Sample 1")
-        col <- c(col, "goldenrod3")
-      }
-      # pch <- c(pch, "")
+      # if(input$plot){
+      #   lines(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot), col = "red", lwd = 3)
+      #   leg <- c(leg, "Distribution with chosen parameters")
+      #   col <- c(col, "red")
+      #   pch <- c(pch, "")
+      # }
+      legend("topright", inset = c(0.05,0.05), legend = leg, text.col = col, cex = 1.5)
+    # } else {
+    #   updateCheckboxInput(session, "plot", value = TRUE)
+    #   plot(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot),
+    #   type = "l", ylab = "", lwd = 3, col = "red", xlab = "Mutant count", cex.lab = 1.5, cex.axis = 1.5)
+    #   legend("topright", inset = c(0.05,0.05), legend = "Distribution with chosen parameters", text.col = "red", cex = 1.5)
     }
-    # if(input$plot){
-    #   lines(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot), col = "red", lwd = 3)
-    #   leg <- c(leg, "Distribution with chosen parameters")
-    #   col <- c(col, "red")
-    #   pch <- c(pch, "")
-    # }
-    legend("topright", inset = c(0.05,0.05), legend = leg, text.col = col, cex = 1.5)
-  # } else {
-  #   updateCheckboxInput(session, "plot", value = TRUE)
-  #   plot(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot),
-  #   type = "l", ylab = "", lwd = 3, col = "red", xlab = "Mutant count", cex.lab = 1.5, cex.axis = 1.5)
-  #   legend("topright", inset = c(0.05,0.05), legend = "Distribution with chosen parameters", text.col = "red", cex = 1.5)
-  }
 
   })
 
@@ -715,7 +718,7 @@ output$graph1 <- renderPlot({
                           fitness = fit, death = delta,
                           plateff = pef,
                           dist=lt)$mc)
-      # }
+      }
 
       RV$res_sim <- sim$val
 
