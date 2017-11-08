@@ -2,7 +2,7 @@
 <!-- A pdf version is available [here](Manual.pdf) -->
 
 Different user-friendly tools for fluctuation analysis are available online
-[1, 2 ,7]. However, their settings are quite restrictive: exponential growth model, constant final number of cells...
+[1, 2, 7]. However, their settings are quite restrictive: exponential growth model, constant final number of cells...
 
 The R package **flan** ([3], available on [CRAN](https://cran.r-project.org/package=flan)) provides tools for
 fluctuation analysis of mutant cell counts. It includes functions dedicated to the distribution of final numbers of mutant cells. Parametric estimation and hypothesis testing are also implemented, enabling inference on different sorts of data with several possible methods, under different model assumptions.
@@ -33,14 +33,14 @@ Data file must be `csv` file (<a download="mc.csv" href="`r sprintf('data:text/c
 `txt` file (<a download="mc.txt" href="`r sprintf('data:text/csv;base64,%s', mctxt)`">example</a>). These numbers may be coupled with final numbers of cells (<a download="mc_fn.csv" href="`r sprintf('data:text/csv;base64,%s', mcfn)`">example</a>).
 
 When a data file has been selected, it is printed on the main panel.
-Moreover, a histogram of the mutant counts is plotted.
+Moreover, a histogram of the mutant counts is plotted. The dashed line represent the jackpot delimitation: all counts larger than this value can be considered as jackpots. This value is arbitrary and is given by the median plus 1.5 times the interquartile range.
 
 ### Settings
 
 All the inputs of the `flan.test` function can be set:
 + The user can set the value of **Death parameter**, **Platting efficiency** or the **Fitness** (if **Unknown fitness** is unmarked) in the appropriate text boxes under the sample.
-+ Even if the mutant counts are not coupled with final number of cells, it is possible to consider the case where the final number of cell is random. When **Random final counts** is marked, the user can set the value of the **Mean final number** and the **Coefficient of variation** (ratio of the standard deviation to the mean) of cells using the appropriate text boxes.
-+ If mutant counts are coupled with final numbers of cells or when **Random final counts** is checked, the mutation probability is considered instead of the mean number of mutations.
++ Even if the mutant counts are not coupled with final number of cells, it is possible to consider the case where the final number of cell is random. When **With final counts** is marked, the user can set the value of the **Mean final number** and the **Coefficient of variation** (ratio of the standard deviation to the mean) of cells using the appropriate text boxes.
++ If mutant counts are coupled with final numbers of cells or when **With final counts** is checked, the mutation probability is considered instead of the mean number of mutations.
 + When **Two sample test** is checked, the above settings can be different for the two samples.
 + Two growth model are available:
   * Luria-Delbrück model (**LD**): the lifetime of any mutant cell is assumed to be exponential;
@@ -53,13 +53,13 @@ All the inputs of the `flan.test` function can be set:
 + The user can also choose the null values and the alternative hypotheses for the mutation number/probability and the fitness (if **Unknown fitness** is checked), and the level of the confidence intervals.
 + Histograms describing the mutant counts are exposed. It is possible to modify the number of classes and the maximal value.
 
-When two samples are considered, most of the above settings can be different between the two samples.
+When **Two sample test** is checked, most of the above settings can be different between the two samples.
 
 ### Result
 
 Once the user has launched the statistical test, the R input and output are printed.
 The estimated distribution of each sample is plotted and added to the related histogram.   
-Moreover, a pdf file which summarize the data, the settings, the result and the decision can be downloaded (**Report** button).
+Moreover, a PDF file which summarizes the data, the settings, the result and the decision can be downloaded (**PDF report** button). The graphic outputs of the report are drawn using **Graphic settings**.
 
 ***
 ## Simulation
@@ -73,7 +73,7 @@ Different parameters are available for the simulation. Here are some details:
   * **Log-Normal** distribution: in that case, the user has to set the mean and standard deviation of the distribution on the log-scale;
   * **Gamma** distribution: in that case, the user has to set the shape and the scale of the distribution.
 + Whatever the choice of the distribution, its parameter will be adjusted in order to get a unit growth rate. In particular, the rate for the exponential case and the location for the constant case are directly adjusted according to the **Death parameter**.
-+ If **Random final counts** is checked, final numbers of cells are also sampled. Three cases are possible:
++ If **With final counts** is checked, final numbers of cells are also sampled. Three cases are possible:
   * Constant final number of cells;
   * Log-Normal distributed final number of cells;
   * Gamma distributed final number of cells.
@@ -91,6 +91,8 @@ The user can also perform parametric estimation (function `mutestim` of **flan**
 ***
 ## Contact
 For any question, remark, or bug, please feel free to send a mail at [adrien.mazoyer(at)univ-grenoble-alpes.fr](mailto:adrien.mazoyer@univ-grenoble-alpes.fr) or to report it [here](https://github.com/AdriMaz/ShinyFlan/issues).
+
+Developed at [Laboratoire Jean Kuntzmann](http://ljk.imag.fr/) by Adrien Mazoyer, Rémy Drouilhet, and Bernard Ycart.
 
 ***
 ## References

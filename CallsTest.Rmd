@@ -452,8 +452,8 @@ flan.test(mc = mc,
 
 <!--Two-Sample, Fit, only fn, winsor -->
 ````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	death = death, plateff = plateff,
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -462,10 +462,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -474,9 +474,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, !Fit, only fn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -485,10 +485,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -496,11 +496,14 @@ flan.test(mc = mc,
 	winsor = winsor)
 ````
 
+
+
+
 <!--Two-Sample, Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -510,9 +513,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, !Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -521,9 +524,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, Fit, only fn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -532,10 +535,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -544,9 +547,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, !Fit, only fn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -555,10 +558,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -568,9 +571,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -580,9 +583,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, !Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -590,9 +593,9 @@ flan.test(mc = mc,
 	winsor = winsor)
 ````
 
-````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -601,10 +604,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -613,9 +616,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, !Fit, only fn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -624,10 +627,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -637,9 +640,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -649,9 +652,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, !Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -660,9 +663,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, Fit, only fn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -671,10 +674,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -683,9 +686,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, !Fit, only fn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -694,10 +697,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -707,9 +710,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -719,9 +722,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, !Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -732,9 +735,9 @@ flan.test(mc = mc,
 
 
 <!--Two-Sample, Fit, only fn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -743,10 +746,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -755,9 +758,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, !Fit, only fn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -766,10 +769,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -779,9 +782,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -791,9 +794,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, !Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
-flan.test(mc = mc,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "LD",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -802,9 +805,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, Fit, only fn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -813,10 +816,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -825,9 +828,9 @@ flan.test(mc = mc,
 ````
 
 <!--Two-Sample, !Fit, only fn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc, fn = fn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -836,10 +839,10 @@ flan.test(mc = mc, fn = fn,
 ````
 
 <!--Two-Sample, !Fit, only mfn/cvfn, winsor -->
-````{r, echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	mfn = mfn, cvfn = cvfn,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
@@ -849,9 +852,9 @@ flan.test(mc = mc,
 
 <!--Two-Sample, Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	death = death, plateff = plateff,
+````{r, echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0, fitness0 = fit0,
 	conf.level = clevel,
@@ -861,12 +864,313 @@ flan.test(mc = mc,
 
 <!--Two-Sample, !Fit, !fluct, winsor -->
 
-````{r, echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
-flan.test(mc = mc,
-	fitness = fitness, death = death, plateff = plateff,
+````{r, echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2),
+	fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 	model = "H",
 	mutprob0 = mut0,
 	conf.level = clevel,
 	alternative = mutalt, method = "P0"
 )
+````
+
+<!--Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+
+<!--Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+
+<!--Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+
+<!--Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+<!--Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+
+<!--Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+<!--Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "LD",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+
+<!--Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+
+<!--Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "ML",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+
+<!--Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+<!--Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "P0",
+	winsor = winsor)
+````
+
+
+<!--Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+<!--Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0, fitness0 = fit0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+
+<!--Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+	mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
+````
+
+<!--Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor -->
+````{r, echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE}
+flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+	mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+	fitness = c(fitness1, fitness2),
+	death = c(death1, death2), plateff = c(plateff1, plateff2),
+	model = "H",
+	mutprob0 = mut0,
+	conf.level = clevel,
+	alternative = c(mutalt, fitalt), method = "GF")
 ````

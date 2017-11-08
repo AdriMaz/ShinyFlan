@@ -1,12 +1,11 @@
-# require(shiny)
-require(markdown)
-require(shinyjs)
+require(shinyjs, quietly = TRUE)
+require(knitr, quietly = TRUE)
+require(flan, quietly = TRUE)
 
 shinyUI(
   fluidPage(
     useShinyjs(),
   tabsetPanel(
-
 
 ## TAB 1
     tabPanel("Hypothesis testing",
@@ -21,12 +20,16 @@ shinyUI(
               uiOutput(outputId = "launchtest")
       	    ),
             column(3,
+              uiOutput(outputId = "dlbutton")
+    	      ),
+            column(3,
               # uiOutput(outputId = "refresh")
-              actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
+              actionButton(inputId = "defval", label = tags$strong("Default values"))
       	    ),
             column(3,
-              uiOutput(outputId = "dlbutton")
-    	      )
+              # uiOutput(outputId = "refresh")
+              actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
+      	    )
             # ,
             # column(3,
             #   uiOutput(outputId = "showcode")
@@ -60,7 +63,7 @@ shinyUI(
       	      checkboxInput(inputId = "header", label = tags$strong("Header"), value = TRUE)
       	    ),
       	    column(8,
-      	      checkboxInput(inputId = "twosample", label = tags$strong("Two Sample Test"), value = FALSE)
+      	      checkboxInput(inputId = "twosample", label = tags$strong("Two-sample test"), value = FALSE)
       	    )
       	  ),
           # tags$hr(),
@@ -69,7 +72,7 @@ shinyUI(
       	    column(6,
               fluidRow(
       	         checkboxInput(inputId = "estfit", label = tags$strong("Unknown fitness"), value = TRUE),
-                 checkboxInput(inputId = "fluct", label = tags$strong("Random final counts"), value = FALSE)
+                 checkboxInput(inputId = "fluct", label = tags$strong("With final counts"), value = FALSE)
               )
       	    ),
       	    column(6,
@@ -80,7 +83,7 @@ shinyUI(
       	  ),
       	  fluidRow(
       	    column(6,
-      	      selectInput(inputId = "method", label = "Estimation Method",
+      	      selectInput(inputId = "method", label = "Estimation method",
       		      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
       	      )
       	    ),
@@ -246,7 +249,7 @@ shinyUI(
             conditionalPanel(condition = "input.fluct",
         	    column(2,
   	            textInput(inputId = "mfn1", "Mean final number of cells",
-    		          value = 1e9
+    		          value = 0
     	          )
   	          ),
       	      column(3,
@@ -285,7 +288,7 @@ shinyUI(
               conditionalPanel(condition = "input.fluct",
         	      column(2,
               		textInput(inputId = "mfn2", "Mean final number of cells",
-              		  value = 1e9
+              		  value = 0
               		)
         	      ),
         	      column(3,
@@ -346,7 +349,7 @@ shinyUI(
         sidebarLayout(
           sidebarPanel(width = 4,
             fluidRow(
-              column(3,
+              column(2,
                 actionButton(inputId = "sim", label = tags$strong("Sample"))
               ),
               column(3,
@@ -356,7 +359,7 @@ shinyUI(
                 uiOutput(outputId = "est.sim")
                 # actionButton(inputId = "est.sim", label = tags$strong("Estimation"))
               ),
-              column(3,
+              column(4,
                 uiOutput(outputId = "dlsample")
                   # actionButton(inputId = "showcodesim", label = tags$strong("Show/Hide Code"))
               )
@@ -420,7 +423,7 @@ shinyUI(
             ),
             fluidRow(
               # column(4,
-                checkboxInput(inputId = "fluctsim", label = tags$strong("Random final counts"), value = FALSE)
+                checkboxInput(inputId = "fluctsim", label = tags$strong("With final counts"), value = FALSE)
               # ),
             ),
             conditionalPanel("input.fluctsim",
@@ -449,7 +452,7 @@ shinyUI(
         	      )
               ),
               column(6,
-        	      selectInput(inputId = "method.sim", label = "Estimation Method",
+        	      selectInput(inputId = "method.sim", label = "Estimation method",
         		      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
         	      )
               )

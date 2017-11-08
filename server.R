@@ -1,5 +1,3 @@
-require(knitr)
-require(flan)
 
 shinyServer(function(input, output, session) {
 
@@ -245,11 +243,16 @@ shinyServer(function(input, output, session) {
       fn <- list(fn1 = if(length(RV$data1) == 2) RV$data1[[2]] else NULL,
                  fn2 = if(length(RV$data2) == 2) RV$data2[[2]] else NULL)
 
-      mfn <- list(if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
-                  if(!input$fluct) NULL else {if(as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
+     if(!input$fluct){
+       mfn <- list(NULL, NULL)
+       cvfn <- list(NULL, NULL)
+     } else {
+       mfn <- list(if(as.numeric(input$mfn1) == 0 | !is.null(fn[[1]])) NULL else as.numeric(input$mfn1),
+                  if(as.numeric(input$mfn2) == 0 | !is.null(fn[[2]])) NULL else as.numeric(input$mfn2))
 
-      cvfn <- list(if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
-                   if(!input$fluct) NULL else {if((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
+       cvfn <- list(if((as.numeric(input$cvfn1) == 0 & is.null(mfn[[1]])) | !is.null(fn[[1]])) NULL else as.numeric(input$cvfn1),
+                    if((as.numeric(input$cvfn2) == 0 & is.null(mfn[[2]])) | !is.null(fn[[2]])) NULL else as.numeric(input$cvfn2))
+     }
 
 
       if(is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
@@ -296,21 +299,20 @@ shinyServer(function(input, output, session) {
   )
 
 
-  observeEvent(input$estfit,{
-    if(!is.null(RV$res)){
-      RV$res <- c()
-      RV$warn <- c()
-      RV$show_res <- FALSE
-    }
-  })
+  # observeEvent(input$estfit,{
+  #   if(!is.null(RV$res)){
+  #     RV$res <- c()
+  #     RV$warn <- c()
+  #   }
+  # })
 
 
   observeEvent(input$fluct,{
     if(!is.null(RV$res)){
       RV$res <- c()
       RV$warn <- c()
-      RV$show_res <- FALSE
     }
+    if(RV$show_res) RV$show_res <- FALSE
   })
 
   output$launchtest <- renderUI({
@@ -326,21 +328,20 @@ shinyServer(function(input, output, session) {
   # })
 
   output$dlbutton <- renderUI(
-        if(RV$show_res) downloadButton(outputId = "report", label = tags$strong("Report"))
+        if(RV$show_res) downloadButton(outputId = "report", label = tags$strong("PDF report"))
   )
 
-  observeEvent(input$refresh, {
-
+  refresh <- function(){
     updateTextInput(session, "death1", value = 0)
     updateTextInput(session, "plateff1", value = 1)
-    if(length(RV$data1) == 1){
+    if(length(RV$data1) < 2){
       updateTextInput(session, "mfn1", value = 0)
       updateTextInput(session, "cvfn1", value = 0)
     }
     updateTextInput(session, "fitvalue1", value = 1)
     updateTextInput(session, "death2", value = 0)
     updateTextInput(session, "plateff2", value = 1)
-    if(length(RV$data2) == 2){
+    if(length(RV$data2) < 2){
       updateTextInput(session, "mfn2", value = 0)
       updateTextInput(session, "cvfn2", value = 0)
     }
@@ -358,7 +359,9 @@ shinyServer(function(input, output, session) {
     updateCheckboxInput(session, "header", value = TRUE)
     updateCheckboxInput(session, "estfit", value = TRUE)
     updateCheckboxInput(session, "twosample", value = FALSE)
-    updateCheckboxInput(session, "fluct", value = FALSE)
+    if(length(RV$data1) == 2 | length(RV$data2) == 2){
+      updateCheckboxInput(session, "fluct", value = TRUE)
+    } else updateCheckboxInput(session, "fluct", value = FALSE)
 
     updateSelectInput(session, "model", label = "Distribution of mutant lifetime",
                       choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H")
@@ -379,19 +382,27 @@ shinyServer(function(input, output, session) {
     updateNumericInput(session, "nclass2", value = 100)
     updateNumericInput(session, "max.plot2", value = 100)
 
+    RV$res <- c()
+    RV$warn <- c()
+    RV$show_res <- FALSE
+
+  }
+
+  observeEvent(input$defval,{
+    refresh()
+  })
+
+  observeEvent(input$refresh, {
     RV$file1_state <- "reset"
     RV$file2_state <- "reset"
 
     RV$data1 <- c()
     RV$data2 <- c()
 
-    RV$res <- c()
-    RV$warn <- c()
-
     reset("sample1")
     reset("sample2")
 
-    RV$show_res <- FALSE
+    refresh()
 
     }
   )
@@ -421,6 +432,10 @@ shinyServer(function(input, output, session) {
 
 
   observeEvent(input$estfit, {
+    if(!is.null(RV$res)){
+      RV$res <- c()
+      RV$warn <- c()
+    }
     updateTextInput(session, "fitvalue1", value = 1)
     updateTextInput(session, "fitvalue2", value = 1)
     if(RV$show_res) RV$show_res <- FALSE
@@ -450,7 +465,6 @@ shinyServer(function(input, output, session) {
   })
 
   output$restest <- renderPrint({
-
       validate(
 	need(as.numeric(input$plateff1) >=0 & as.numeric(input$plateff1) <= 1 & as.numeric(input$plateff2) >= 0 & as.numeric(input$plateff2) <= 1, "Plating efficiency must be a positive and <= 1 number."),
 
@@ -474,9 +488,7 @@ shinyServer(function(input, output, session) {
 
       )
 
-      if(RV$show_res) {
-        print(RV$res)
-      }
+      if(RV$show_res) print(RV$res)
 
    })
 
@@ -506,10 +518,16 @@ shinyServer(function(input, output, session) {
       # updateNumericInput(session, "maxX", value = max(mc))
       hist(mc, nclass = input$nclass1, probability = TRUE,
          ylab = "", main = "Empirical distribution of Sample 1", xlab = "Mutant count", cex.lab = 1.5,
-         col = "blue3", cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.plot1))
-      leg <- "Sample 1"
-      col <- "blue3"
-      # pch <- 0
+         col = "azure3", cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.plot1))
+
+      J <- median(mc)+1.5*diff(quantile(mc, c(0.25, 0.75)))  ## "Jackpot" minimal value
+      abline(v = J, lty = 5, col = "red", lwd = 3)
+      leg <- c("Sample 1", "Jackpot threshold of Sample 1")
+      col <- c("black", "red")
+      lty <- c(NA, 5)
+      pch <- c(22, NA)
+      ptbg <- c("azure3", NA)
+
       if(!is.null(RV$res)) {
         if(!input$twosample){
           mut <- RV$res$estimate[1]
@@ -520,12 +538,15 @@ shinyServer(function(input, output, session) {
         }
         names(mut) <- NULL ; names(fit) <- NULL
         if(!input$fluct){
-          lines(X,dflan(X,mutations = mut,
+          points(X,dflan(X,mutations = mut,
                         fitness = fit, death = as.numeric(input$death1), plateff = as.numeric(input$plateff1),
-                        model = input$model), col = "goldenrod3", lwd = 3)
+                        model = input$model), col = "blue3", lwd = 3, pch = 4)
 
           leg <- c(leg, "Estimated distribution of Sample 1")
-          col <- c(col, "goldenrod3")
+          col <- c(col, "blue3")
+          pch <- c(pch, 4)
+          ptbg <- c(ptbg, NA)
+          lty <- c(lty, NA)
         }
         # pch <- c(pch, "")
       }
@@ -535,12 +556,12 @@ shinyServer(function(input, output, session) {
       #   col <- c(col, "red")
       #   pch <- c(pch, "")
       # }
-      legend("topright", inset = c(0.05,0.05), legend = leg, text.col = col, cex = 1.5)
+      legend("topright", inset = c(0.05,0.05), legend = leg, pch = pch, pt.bg = ptbg, pt.cex = 3, lty = lty, lwd = 3, col = col, cex = 1.5)
     # } else {
     #   updateCheckboxInput(session, "plot", value = TRUE)
     #   plot(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot),
     #   type = "l", ylab = "", lwd = 3, col = "red", xlab = "Mutant count", cex.lab = 1.5, cex.axis = 1.5)
-    #   legend("topright", inset = c(0.05,0.05), legend = "Distribution with chosen parameters", text.col = "red", cex = 1.5)
+    #   legend("topright", inset = c(0.05,0.05), legend = "Distribution with chosen parameters", cex = 1.5)
     }
 
   })
@@ -566,38 +587,42 @@ shinyServer(function(input, output, session) {
 
     # validate(need(length(RV$data2) == 1 | (input$mfn2 == 0 & input$cvfn2 == 0), "Graphic representation for sample with random final count is not available yet..."))
     if(!is.null(RV$data2)){
-      validate(need(!input$fluct, "Graphic representation for sample with random final count is not available yet..."))
+      # validate(need(!input$fluct, "Graphic representation for sample with random final count is not available yet..."))
       mc <- RV$data2[[1]]
       X <- 0:max(mc)
       # updateNumericInput(session, "maxX", value = max(c(RV$data1[[1]], mc)))
       hist(mc, nclass = input$nclass2, probability = TRUE, ylab = "", xlab = "Mutant count",
-      col = "chartreuse3", main = "Empirical distribution of Sample 2",
-      cex.lab = 1.5, cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.plot2))
-      leg <- "Sample 2"
-      col <- "chartreuse3"
-      # pch <- "0"
+        col = "bisque", main = "Empirical distribution of Sample 2",
+        cex.lab = 1.5, cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.plot2)
+      )
+
+      J <- median(mc)+1.5*diff(quantile(mc, c(0.25, 0.75)))  ## "Jackpot" minimal value
+      abline(v = J, lty = 5, col = "darkblue", lwd = 3)
+      leg <- c("Sample 2", "Jackpot threshold of Sample 2")
+      col <- c("black", "darkblue")
+      lty <- c(NA, 5)
+      pch <- c(22, NA)
+      ptbg <- c("bisque", NA)
+
       if(RV$show_res) {
         mut <- RV$res$estimate[2,1]
         fit <- if(input$estfit) RV$res$estimate[2,2] else as.numeric(input$fitvalue1)
 
         names(mut) <- NULL ; names(fit) <- NULL
-
-        lines(X,dflan(X,mutations = mut,
-                      fitness = fit, death = as.numeric(input$death2), plateff = as.numeric(input$plateff2),
-                      model = input$model), col = "blue", lwd = 3)
-        leg <- c(leg, "Estimated distribution of Sample 2")
-        col <- c(col, "blue")
-        # pch <- c(pch, "")
+        if(!input$fluct){
+          points(X,dflan(X,mutations = mut,
+                        fitness = fit, death = as.numeric(input$death2), plateff = as.numeric(input$plateff2),
+                        model = input$model), col = "forestgreen", lwd = 3, pch = 4)
+          leg <- c(leg, "Estimated distribution of Sample 2")
+          col <- c(col, "forestgreen")
+          pch <- c(pch, 4)
+          ptbg <- c(ptbg, NA)
+          lty <- c(lty, NA)
+        }
       }
-      # if(input$plot){
-      #   lines(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot), col = "red", lwd = 3)
-      #   leg <- c(leg, "Distribution with chosen parameters")
-      #   col <- c(col, "red")
-      #   # pch <- c(pch, "")
-      # }
-      legend("topright", inset = c(0.05,0.4), legend = leg, text.col = col, cex = 1.5)
+      legend("topright", inset = c(0.05,0.05), legend = leg, pch = pch, pt.bg = ptbg, pt.cex = 3, lty = lty, lwd = 3, col = col, cex = 1.5)
     }
-    })
+  })
 
     output$param1.sim <- renderUI({
       if(input$model.sim == "LN"){
@@ -859,7 +884,7 @@ shinyServer(function(input, output, session) {
 
     output$plot.theo <- renderUI({
       if(!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H" )){
-        checkboxInput(inputId = "plot.sim", label = tags$strong("Plot theoretical distribution"), value = TRUE)
+        checkboxInput(inputId = "plot.theo", label = tags$strong("Plot theoretical distribution"), value = TRUE)
       }
     })
 
@@ -900,19 +925,28 @@ shinyServer(function(input, output, session) {
         # updateNumericInput(session, "maxX", value = max(mc))
         hist(mc, nclass = input$nclass.sim, probability = TRUE,
            ylab = "", main = "Empirical distribution of the sample", xlab = "Mutant count", cex.lab = 1.5,
-           col = "blue3", cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.sim))
-        leg <- "Sample"
-        col <- "blue3"
-        pch <- 0
-      # }
+           col = "azure3", cex.axis = 1.5, cex.main = 2, xlim = c(0,input$max.sim))
+
+        J <- median(mc)+1.5*diff(quantile(mc, c(0.25, 0.75)))  ## "Jackpot" minimal value
+        abline(v = J, lty = 5, col = "red", lwd = 3)
+
+        leg <- c("Sample", "Jackpot threshold of Sample")
+        col <- c("black", "red")
+        lty <- c(NA, 5)
+        pch <- c(22, NA)
+        ptbg <- c("azure3", NA)
+
         if(!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H")){
-          if(input$plot.sim){
-            lines(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef,
-                          model = input$model.sim), col = "red", lwd = 3)
+          if(input$plot.theo){
+            points(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef,
+                          model = input$model.sim), col = "darkmagenta", lwd = 3, pch = 4)
+
             leg <- c(leg, "Theoretical distribution")
-            col <- c(col, "red")
-            pch <- c(pch, "")
-            # legend("topright", inset = c(0.05,0.05), legend = leg, text.col = col, cex = 1.5)
+            col <- c(col, "darkmagenta")
+            pch <- c(pch, 4)
+            ptbg <- c(ptbg, NA)
+            lty <- c(lty, NA)
+            # legend("topright", inset = c(0.05,0.05), legend = leg, cex = 1.5)
           }
           if(!is.null(RV$res_est) & input$plot.est){
             mut <- RV$res_est$mutations
@@ -920,23 +954,26 @@ shinyServer(function(input, output, session) {
             pef <- as.numeric(input$plateff.est)
             fit <- if(input$estfitsim) RV$res_est$fitness else as.numeric(input$fit.est)
 
-            lines(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef,
-                          model = input$model.est), col = "goldenrod3", lwd = 3)
-            leg <- c(leg, "Estimated distribution")
-            col <- c(col, "goldenrod3")
-            pch <- c(pch, "")
-          }
-          legend("topright", inset = c(0.05,0.05), legend = leg, text.col = col, cex = 1.5)
-        }
+            points(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef,
+                          model = input$model.est), col = "blue3", lwd = 3, pch = 3)
 
-      } else {
-        if(!input$fluctsim & input$plot.sim & (input$model.sim == "LD" | input$model.sim == "H")){
-          X <- 0:input$max.sim
-          plot(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef, model = input$model.sim),
-          type = "l", ylab = "", lwd = 3, col = "red", xlab = "Mutant count", cex.lab = 1.5, cex.axis = 1.5)
-          legend("topright", inset = c(0.05,0.05), legend = "Theoretical distribution", text.col = "red", cex = 1.5)
+            leg <- c(leg, "Estimated distribution of Sample 1")
+            col <- c(col, "blue3")
+            pch <- c(pch, 3)
+            ptbg <- c(ptbg, NA)
+            lty <- c(lty, NA)
+          }
         }
+        legend("topright", inset = c(0.05,0.05), legend = leg, pch = pch, pt.bg = ptbg, pt.cex = 3, lty = lty, lwd = 3, col = col, cex = 1.5)
       }
+      # else {
+      #   if(!input$fluctsim & input$plot.sim & (input$model.sim == "LD" | input$model.sim == "H")){
+      #     X <- 0:input$max.sim
+      #     plot(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef, model = input$model.sim),
+      #     pch = "+", ylab = "", lwd = 3, col = "red", xlab = "Mutant count", cex.lab = 1.5, cex.axis = 1.5)
+      #     legend("topright", inset = c(0.05,0.05), legend = "Theoretical distribution", lty = 1, cex = 1.5)
+      #   }
+      # }
 
     })
 

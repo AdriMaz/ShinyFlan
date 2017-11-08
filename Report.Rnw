@@ -3,14 +3,29 @@
 \usepackage[T1]{fontenc}
 %\usepackage[french]{babel}
 \parindent0pt
-\topmargin 0.0cm
+\topmargin -1cm
 \oddsidemargin 0.5cm
 \evensidemargin 0.5cm
 \textwidth 16cm
-\textheight 21cm
+\textheight 22cm
 
 \newcommand{\textbfit}[1]{\textbf{\textit{#1}}}
 \newcommand{\IC}[2]{[#1;#2]}
+
+\newenvironment{changemargin}[2]{
+	\begin{list}{}{%
+	\setlength{\topsep}{0pt}%
+	\setlength{\leftmargin}{0pt}%
+	\setlength{\rightmargin}{0pt}%
+	\setlength{\listparindent}{\parindent}%
+	\setlength{\itemindent}{\parindent}%
+	\setlength{\parsep}{0pt plus 1pt}%
+	\addtolength{\leftmargin}{#1}%
+	\addtolength{\rightmargin}{#2}%
+	}\item }{
+	\end{list}}
+%%%% fin macro %%%%
+
 
 \usepackage{array}
 \newcolumntype{M}[1]{>{\centering} m{#1}} % Écrire sur plusieurs lignes dans un tableau
@@ -19,39 +34,99 @@
 %Knitr test in \LaTeX.
 
 \section*{Data}
-
-%	paragraph*{Graphic representation}
-	\paragraph*{Sample 1}
-	\begin{center}
-		<<echo=FALSE, eval=TRUE,fig.height=5,out.width='\\textwidth'>>=
+	\begin{changemargin}{-3cm}{-3cm}
+		\centering
+		<<echo=FALSE, eval=TRUE,fig.height=4.5, fig.width=10>>=
 	  		mc <- RV$data1[[1]]
 	  		hist(mc, nclass = input$nclass1, probability = TRUE,
-	    		   ylab = "", xlab = "Mutant count", main = "Empirical distribution of the sample",
-	    		   cex.lab = 0.6, cex.main = 0.8,
-		       col = "blue3", cex.axis = 1, xlim = c(0,input$max.plot1)
-					 )
-				 summary(mc)
+	    		   ylab = "", xlab = "Mutant count", main = "Sample 1",
+	    		   cex.lab = 0.8, cex.main = 1.5,
+	       		 col = "azure", cex.axis = 0.8, xlim = c(0,input$max.plot1)
+					 	)
+				 J <- median(mc)+1.5*diff(quantile(mc, c(0.25, 0.75)))
+				 abline(v = J, lty = 5, col = "red", lwd = 1.5)
+
+				 leg <- c("Empirical distribution", "Jackpot threshold")
+	       col <- c("black", "red")
+	       lty <- c(NA, 5)
+	       pch <- c(22, NA)
+	       ptbg <- c("azure3", NA)
+
+				 if(!input$fluct){
+				 	 require(flan, quietly = TRUE)
+					 X <- 0:max(mc)
+					 if(!is.null(RV$res)) {
+		         if(!input$twosample){
+		           mut <- RV$res$estimate[1]
+		           fit <- if(input$estfit) RV$res$estimate[2] else as.numeric(input$fitvalue1)
+		         } else {
+		           mut <- RV$res$estimate[1,1]
+		           fit <- if(input$estfit) RV$res$estimate[1,2] else as.numeric(input$fitvalue1)
+		         }
+		         names(mut) <- NULL ; names(fit) <- NULL
+	           points(X,dflan(X,mutations = mut,
+	                         fitness = fit, death = as.numeric(input$death1), plateff = as.numeric(input$plateff1),
+	                         model = input$model), col = "blue3", pch = 4, lwd = 1.5)
+
+						 leg <- c(leg, "Estimated distribution")
+	           col <- c(col, "blue3")
+	           pch <- c(pch, 4)
+	           ptbg <- c(ptbg, NA)
+	           lty <- c(lty, NA)
+					 }
+         }
+				 legend("topright", legend = leg, pch = pch, pt.bg = ptbg, pt.cex = 2, lty = lty, lwd = 1.5, col = col)
 		 @
-	 \end{center}
-	 \paragraph{\Sexpr{if(!is.null(RV$data2)) "Sample 2" else ""}}
-	 \begin{center}
-			<<result='asis', echo=FALSE, fig.height=5,out.width='\\textwidth'>>=
+	%  \end{center}
+\end{changemargin}
+\begin{changemargin}{-3cm}{-3cm}
+		\centering
+	%  \begin{center}
+			<<result='asis', echo=FALSE, fig.height=4.5, fig.width=10>>=
 				if(!is.null(RV$data2)) {
 					mc <- RV$data2[[1]]
 					hist(mc, nclass = input$nclass2, probability = TRUE,
-							 ylab = "", xlab = "Mutant count", main = "Empirical distribution of the sample",
-							 cex.lab = 0.6, cex.main = 0.8,
-						 col = "chartreuse3", cex.axis = 1.5, xlim = c(0,input$max.plot2)
+							 ylab = "", xlab = "Mutant count", main = "Sample 2",
+							 cex.lab = 0.8, cex.main = 1.5,
+						 col = "bisque", cex.axis = 0.8, xlim = c(0,input$max.plot2)
 						 )
-					 summary(mc)
+					 J <- median(mc)+1.5*diff(quantile(mc, c(0.25, 0.75)))
+					 abline(v = J, lty = 5, col = "darkblue", lwd = 1.5)
+					 leg <- c("Empirical distribution", "Jackpot threshold")
+		       col <- c("black", "darkblue")
+		       lty <- c(NA, 5)
+		       pch <- c(22, NA)
+		       ptbg <- c("bisque", NA)
+
+					 if(!input$fluct){
+					 	 require(flan, quietly = TRUE)
+						 X <- 0:max(mc)
+						 if(!is.null(RV$res)) {
+		           mut <- RV$res$estimate[2,1]
+		           fit <- if(input$estfit) RV$res$estimate[2,2] else as.numeric(input$fitvalue2)
+			         names(mut) <- NULL ; names(fit) <- NULL
+		           points(X,dflan(X,mutations = mut,
+		                         fitness = fit, death = as.numeric(input$death2), plateff = as.numeric(input$plateff2),
+		                         model = input$model), col = "forestgreen", pch = 4, lwd = 1.5)
+
+							 leg <- c(leg, "Estimated distribution")
+		           col <- c(col, "forestgreen")
+		           pch <- c(pch, 4)
+		           ptbg <- c(ptbg, NA)
+		           lty <- c(lty, NA)
+						 }
+	         }
+					 legend("topright", legend = leg, pch = pch, pt.bg = ptbg, pt.cex = 2, lty = lty, lwd = 1.5, col = col)
 				 }
 			@
-		\end{center}
+		% \end{center}
+	\end{changemargin}
+
   \newpage
 
 \section*{Parameter settings}
 %
-
+% "With Final counts? & ", if(length(RV$data1) == 2) "Yes \\texttt{fn}" else "No", "& \\tabularnewline
   \begin{center}
   	\renewcommand{\arraystretch}{1.5}
     <<results='asis', echo=FALSE>>=
@@ -62,18 +137,21 @@
             & Variable name & Value \\tabularnewline
             \\hline",
             if(!input$estfit){paste(
-            "Fitness & \\texttt{fitness} & ", input$fitvalue1, "\\tabularnewline
-            \\hline")
+	            "Fitness & \\texttt{fitness} & ", input$fitvalue1, "\\tabularnewline
+	            \\hline")
             },
             "Death parameter & \\texttt{death} & ", input$death1, "\\tabularnewline
             \\hline
             Plating efficiency & \\texttt{plateff} & ", input$plateff1, "\\tabularnewline
             \\hline",
             if(input$fluct) {paste(
-            "Mean Final Number & \\texttt{mfn} & ", input$mfn1, "\\tabularnewline
-            \\hline
-            Coef. Variation Final Number & \\texttt{cvfn} & ", input$cvfn1, " \\tabularnewline
-            \\hline ")
+							"Final counts & \\texttt{fn} & ", if(length(RV$data1) == 1) "\\texttt{NULL}" else "cf. data",  "\\tabularnewline
+							\\hline
+	            Mean Final Number & \\texttt{mfn} & ", format(input$mfn1, scientific = TRUE, digit = 5), "\\tabularnewline
+	            \\hline
+	            Coef. Variation Final Number & \\texttt{cvfn} & ", input$cvfn1, " \\tabularnewline
+	            \\hline
+							")
             },
             "\\end{tabular}"
         ))
@@ -94,7 +172,9 @@
           Plating efficiency & \\texttt{plateff1} & ", input$plateff1, "& \\texttt{plateff2} & ", input$plateff2, "\\tabularnewline
           \\hline",
           if(input$fluct) {paste(
-            "Mean Final Number & \\texttt{mfn1} & ", input$mfn1, "& \\texttt{mfn2} & ", input$mfn2, "\\tabularnewline
+						"Final counts & \\texttt{fn1} & ", if(length(RV$data1) == 1) "\\texttt{NULL} &" else "cf. data &", "\\texttt{fn2} & ", if(length(RV$data2) == 1) "\\texttt{NULL}" else "cf. data" , "\\tabularnewline
+						\\hline
+            Mean Final Number & \\texttt{mfn1} & ", format(input$mfn1, scientific = TRUE, digit = 5), "& \\texttt{mfn2} & ", format(input$mfn2, scientific = TRUE, digit = 5), "\\tabularnewline
             \\hline
             Coef. Variation Final Number & \\texttt{cvfn1} & ", input$cvfn1, "& \\texttt{cvfn2} & ", input$cvfn2, "\\tabularnewline
             \\hline")
@@ -179,8 +259,7 @@
 		h <- input$model == "H"
   @
 
-
-	%%%%%One-Sample, Fit, only fn, winsor %%%%%
+	%%%%One-Sample, Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		death = death, plateff = plateff,
@@ -191,7 +270,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -203,7 +282,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, only fn, winsor %%%%%
+	%%%%One-Sample, !Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		fitness = fitness, death = death, plateff = plateff,
@@ -214,7 +293,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -226,7 +305,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -238,7 +317,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, !Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -250,7 +329,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, only fn, winsor %%%%%
+	%%%%One-Sample, Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		death = death, plateff = plateff,
@@ -261,7 +340,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -273,7 +352,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, only fn, winsor %%%%%
+	%%%%One-Sample, !Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		fitness = fitness, death = death, plateff = plateff,
@@ -284,7 +363,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -296,7 +375,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -308,7 +387,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, !Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -330,7 +409,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -342,7 +421,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, only fn, winsor %%%%%
+	%%%%One-Sample, !Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		fitness = fitness, death = death, plateff = plateff,
@@ -353,7 +432,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -365,7 +444,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -377,7 +456,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, !Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -389,7 +468,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, only fn, winsor %%%%%
+	%%%%One-Sample, Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		death = death, plateff = plateff,
@@ -400,7 +479,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -412,7 +491,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, only fn, winsor %%%%%
+	%%%%One-Sample, !Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		fitness = fitness, death = death, plateff = plateff,
@@ -423,7 +502,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -435,7 +514,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -447,7 +526,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, !Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -461,7 +540,7 @@
 
 
 
-	%%%%%One-Sample, Fit, only fn, winsor %%%%%
+	%%%%One-Sample, Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		death = death, plateff = plateff,
@@ -472,7 +551,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -484,7 +563,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, only fn, winsor %%%%%
+	%%%%One-Sample, !Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		fitness = fitness, death = death, plateff = plateff,
@@ -495,7 +574,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -507,7 +586,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -519,7 +598,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, !Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -531,7 +610,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, only fn, winsor %%%%%
+	%%%%One-Sample, Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		death = death, plateff = plateff,
@@ -542,7 +621,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -554,7 +633,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, only fn, winsor %%%%%
+	%%%%One-Sample, !Fit, only fn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc, fn = fn,
 		fitness = fitness, death = death, plateff = plateff,
@@ -565,7 +644,7 @@
 	)
 	@
 
-	%%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%%
+	%%%%One-Sample, !Fit, only mfn/cvfn, winsor %%%%
 	<<echo=(!twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
 		mfn = mfn, cvfn = cvfn,
@@ -577,7 +656,7 @@
 	)
 	@
 
-	%%%%%One-Sample, Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -589,7 +668,7 @@
 		winsor = winsor)
 	@
 
-	%%%%%One-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%One-Sample, !Fit, !fluct, winsor %%%%
 
 	<<echo=(!twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
 	flan.test(mc = mc,
@@ -602,10 +681,14 @@
 	@
 
 
-	%%%%%Two-Sample, Fit, only fn, winsor %%%%%
+
+
+
+
+	%%%%Two-Sample, Fit, only fn, winsor %%%%
 	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		death = death, plateff = plateff,
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -613,11 +696,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -625,10 +708,10 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -636,11 +719,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -648,11 +731,14 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, !fluct, winsor %%%%%
 
-	<<echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		death = death, plateff = plateff,
+
+
+	%%%%Two-Sample, Fit, !fluct, winsor %%%%
+
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -660,11 +746,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, !Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		fitness = fitness, death = death, plateff = plateff,
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -672,10 +758,10 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -683,11 +769,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -695,10 +781,10 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -706,11 +792,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -718,11 +804,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		death = death, plateff = plateff,
+	<<echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -730,11 +816,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, !Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		fitness = fitness, death = death, plateff = plateff,
+	<<echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -742,9 +828,9 @@
 		winsor = winsor)
 	@
 
-	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		death = death, plateff = plateff,
+	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -752,11 +838,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -764,46 +850,10 @@
 	)
 	@
 
-	%%%%%Two-Sample, !Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		fitness = fitness, death = death, plateff = plateff,
-		model = "LD",
-		mutprob0 = mut0,
-		conf.level = clevel,
-		alternative = mutalt, method = "GF"
-	)
-	@
-
-	%%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		fitness = fitness, death = death, plateff = plateff,
-		model = "LD",
-		mutprob0 = mut0,
-		conf.level = clevel,
-		alternative = c(mutalt, fitalt), method = "GF"
-	)
-	@
-
-	%%%%%Two-Sample, Fit, !fluct, winsor %%%%%
-
-	<<echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		death = death, plateff = plateff,
-		model = "LD",
-		mutprob0 = mut0, fitness0 = fit0,
-		conf.level = clevel,
-		alternative = c(mutalt, fitalt), method = "GF"
-	)
-	@
-
-	%%%%%Two-Sample, !Fit, !fluct, winsor %%%%%
-
-	<<echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -811,10 +861,46 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF"
+	)
+	@
+
+	%%%%Two-Sample, Fit, !fluct, winsor %%%%
+
+	<<echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF"
+	)
+	@
+
+	%%%%Two-Sample, !Fit, !fluct, winsor %%%%
+
+	<<echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = mutalt, method = "GF"
+	)
+	@
+
+	%%%%Two-Sample, Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -822,11 +908,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -834,10 +920,10 @@
 	)
 	@
 
-	%%%%%Two-Sample, !Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -845,11 +931,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -857,11 +943,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		death = death, plateff = plateff,
+	<<echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -869,11 +955,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, !Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		fitness = fitness, death = death, plateff = plateff,
+	<<echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -883,10 +969,10 @@
 
 
 
-	%%%%%Two-Sample, Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -894,11 +980,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -906,10 +992,10 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -917,11 +1003,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -929,11 +1015,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		death = death, plateff = plateff,
+	<<echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -941,11 +1027,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, !Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
-	flan.test(mc = mc,
-		fitness = fitness, death = death, plateff = plateff,
+	<<echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "LD",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -953,10 +1039,10 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -964,11 +1050,11 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		death = death, plateff = plateff,
+	%%%%Two-Sample, Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn)&(!withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -976,10 +1062,10 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, only fn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc, fn = fn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only fn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctfn)&(!withfluctmfn1)&(!withfluctmfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, fn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -987,11 +1073,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%%
-	<<echo=(twosample)&(!estfit)&(!withfluctfn)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		mfn = mfn, cvfn = cvfn,
-		fitness = fitness, death = death, plateff = plateff,
+	%%%%Two-Sample, !Fit, only mfn/cvfn, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctfn1)&(!withfluctfn2)&(withfluctmfn)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		mfn = list(mfn1, mfn2), cvfn = list(cvfn1, cvfn2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
@@ -999,11 +1085,11 @@
 	)
 	@
 
-	%%%%%Two-Sample, Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		death = death, plateff = plateff,
+	<<echo=(twosample)&(estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0, fitness0 = fit0,
 		conf.level = clevel,
@@ -1011,16 +1097,317 @@
 		winsor = winsor)
 	@
 
-	%%%%%Two-Sample, !Fit, !fluct, winsor %%%%%
+	%%%%Two-Sample, !Fit, !fluct, winsor %%%%
 
-	<<echo=(twosample)&(!estfit)&((!withfluctmfn)&(!withfluctfn))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
-	flan.test(mc = mc,
-		fitness = fitness, death = death, plateff = plateff,
+	<<echo=(twosample)&(!estfit)&((!withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(!withfluctfn2))&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2),
+		fitness = c(fitness1, fitness2), death = c(death1, death2), plateff = c(plateff1, plateff2),
 		model = "H",
 		mutprob0 = mut0,
 		conf.level = clevel,
 		alternative = mutalt, method = "P0"
 	)
+	@
+
+	%%%%Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+
+	%%%%Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+
+	%%%%Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+
+	%%%%Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+	%%%%Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+
+	%%%%Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+	%%%%Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(ld)&(!h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "LD",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+
+	%%%%Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+
+	%%%%Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(ml)&(!gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "ML",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+
+	%%%%Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+	%%%%Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(!gf)&(p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "P0",
+		winsor = winsor)
+	@
+
+
+	%%%%Two-Sample, Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+	%%%%Two-Sample, Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0, fitness0 = fit0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+
+	%%%%Two-Sample, !Fit, mfn1/cvfn1 and fn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(withfluctmfn1)&(!withfluctmfn2)&(!withfluctfn1)&(withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(NULL, fn2),
+		mfn = list(mfn1, NULL), cvfn = list(cvfn1, NULL),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
+	@
+
+	%%%%Two-Sample, !Fit, fn1 and mfn2/cvfn2, winsor %%%%
+	<<echo=(twosample)&(!estfit)&(!withfluctmfn1)&(withfluctmfn2)&(withfluctfn1)&(!withfluctfn2)&(!ml)&(gf)&(!p0)&(!ld)&(h), eval=FALSE>>=
+	flan.test(mc = list(mc1, mc2), fn = list(fn1, NULL),
+		mfn = list(NULL, mfn2), cvfn = list(NULL, cvfn2),
+		fitness = c(fitness1, fitness2),
+		death = c(death1, death2), plateff = c(plateff1, plateff2),
+		model = "H",
+		mutprob0 = mut0,
+		conf.level = clevel,
+		alternative = c(mutalt, fitalt), method = "GF")
 	@
 
 
@@ -1047,15 +1434,15 @@
 						paste("\\begin{tabular}{|c|M{5cm}|}
 							\\hline
 							&", if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "\\tabularnewline \\hline
-							Sample 1 & \\texttt{", if(input$fluct) format(signif(RV$res$estimate[1],6),scientific = TRUE) else signif(RV$res$estimate[1],6), "}\\tabularnewline\\hline
-							Sample 2 & \\texttt{", if(input$fluct) format(signif(RV$res$estimate[2],6),scientific = TRUE) else signif(RV$res$estimate[2],6), "}\\tabularnewline\\hline"
+							Sample 1 & \\texttt{", if(input$fluct) format(RV$res$estimate[1], scientific = TRUE, digit = 5) else format(RV$res$estimate[1], digit = 5), "}\\tabularnewline\\hline
+							Sample 2 & \\texttt{", if(input$fluct) format(RV$res$estimate[2], scientific = TRUE, digit = 5) else format(RV$res$estimate[2], digit = 5), "}\\tabularnewline\\hline"
 						)
 					} else {
 						paste("\\begin{tabular}{|c|M{5cm}|M{5cm}|}
 							\\hline
 							&", if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "& Fitness estimate \\tabularnewline \\hline
-							Sample 1 &\\texttt{", if(input$fluct) format(signif(RV$res$estimate[1,1],6),scientific = TRUE)  else  signif(RV$res$estimate[1,1],6), "}&\\texttt{", signif(RV$res$estimate[1,2],6), "}\\tabularnewline\\hline
-							Sample 2 &\\texttt{", if(input$fluct) format(signif(RV$res$estimate[2,1],6),scientific = TRUE)  else  signif(RV$res$estimate[2,1],6), "}&\\texttt{", signif(RV$res$estimate[2,2],6), "}\\tabularnewline\\hline"
+							Sample 1 &\\texttt{", if(input$fluct) format(RV$res$estimate[1,1], digit = 5, scientific = TRUE) else  format(RV$res$estimate[1,1], digit = 5), "}&\\texttt{", format(RV$res$estimate[1,2], digit = 5), "}\\tabularnewline\\hline
+							Sample 2 &\\texttt{", if(input$fluct) format(RV$res$estimate[2,1], digit = 5,scientific = TRUE) else  format(RV$res$estimate[2,1], digit = 5), "}&\\texttt{", format(RV$res$estimate[2,2], digit = 5), "}\\tabularnewline\\hline"
 						)
 					}
 				} else {
@@ -1063,13 +1450,13 @@
 						paste("\\begin{tabular}{|M{5cm}|}
 							\\hline",
 							 if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "\\tabularnewline \\hline
-							 \\texttt{", if(input$fluct) format(signif(RV$res$estimate[1],6),scientific = TRUE) else signif(RV$res$estimate[1],6), "}\\tabularnewline\\hline"
+							 \\texttt{", if(input$fluct) format(RV$res$estimate[1], digit = 5, scientific = TRUE) else format(RV$res$estimate[1], digit = 5), "}\\tabularnewline\\hline"
 						)
 					} else {
 						paste("\\begin{tabular}{|M{5cm}|M{5cm}|}
 							\\hline",
 							 if(input$fluct) "Mutation probability estimate" else "Mutation number estimate", "& Fitness estimate \\tabularnewline \\hline
-							\\texttt{", if(input$fluct) format(signif(RV$res$estimate[1],6),scientific = TRUE)  else  signif(RV$res$estimate[1],6), " }&\\texttt{", signif(RV$res$estimate[2],6), "}\\tabularnewline\\hline")
+							\\texttt{", if(input$fluct) format(RV$res$estimate[1], digit = 5, scientific = TRUE) else  format(RV$res$estimate[1], digit = 5), " }&\\texttt{", format(RV$res$estimate[2], digit = 5), "}\\tabularnewline\\hline")
 					}
 				}
  				,"\\end{tabular}\\end{center}"))
@@ -1085,13 +1472,13 @@
 						paste("\\begin{tabular}{|c|}
 							\\hline
 							", if(input$fluct) "Mutation probability difference CI" else "Mutation number difference  CI", "\\tabularnewline \\hline
-							\\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2],6),scientific = TRUE)  else  signif(RV$res$conf.int[2],6) ,"}}\\tabularnewline\\hline"
+							\\texttt{\\IC{", if(input$fluct) format(RV$res$conf.int[1], digit = 5, scientific = TRUE)  else  format(RV$res$conf.int[1], digit = 5),"}{", if(input$fluct) format(RV$res$conf.int[2], digit = 5,scientific = TRUE)  else  format(RV$res$conf.int[2], digit = 5) ,"}}\\tabularnewline\\hline"
 						)
 					} else {
 						paste("\\begin{tabular}{|c|c|}
 							\\hline
 							", if(input$fluct) "Mutation probability difference  CI" else "Mutation number difference  CI", "& Fitness difference  CI \\tabularnewline \\hline
-							 \\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1,1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[2,1],6) ,"}}& \\texttt{\\IC{", signif(RV$res$conf.int[1,2],6), "}{", signif(RV$res$conf.int[2,2],6) , "}}\\tabularnewline\\hline"
+							 \\texttt{\\IC{", if(input$fluct) format(RV$res$conf.int[1,1], digit = 5, scientific = TRUE)  else  format(RV$res$conf.int[1,1], digit = 5),"}{", if(input$fluct) format(RV$res$conf.int[2,1], digit = 5, scientific = TRUE)  else  format(RV$res$conf.int[2,1], digit = 5) ,"}}& \\texttt{\\IC{", format(RV$res$conf.int[1,2], digit = 5), "}{", format(RV$res$conf.int[2,2], digit = 5) , "}}\\tabularnewline\\hline"
 						)
 					}
 				} else {
@@ -1099,13 +1486,13 @@
 						paste("\\begin{tabular}{|c|}
 							\\hline
 							", if(input$fluct) "Mutation probability CI" else "Mutation number CI", "\\tabularnewline \\hline
-							\\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2],6),scientific = TRUE)  else  signif(RV$res$conf.int[2],6) ,"}}\\tabularnewline\\hline"
+							\\texttt{\\IC{", if(input$fluct) format(RV$res$conf.int[1], digit = 5, scientific = TRUE)  else  format(RV$res$conf.int[1], digit = 5),"}{", if(input$fluct) format(RV$res$conf.int[2], digit = 5, scientific = TRUE)  else  format(RV$res$conf.int[2], digit = 5) ,"}}\\tabularnewline\\hline"
 						)
 					} else {
 						paste("\\begin{tabular}{|c|c|}
 							\\hline
 							", if(input$fluct) "Mutation probability CI" else "Mutation number CI", "& Fitness CI \\tabularnewline \\hline
-							\\texttt{\\IC{", if(input$fluct) format(signif(RV$res$conf.int[1,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[1,1],6),"}{", if(input$fluct) format(signif(RV$res$conf.int[2,1],6),scientific = TRUE)  else  signif(RV$res$conf.int[2,1],6) ,"}}& \\texttt{\\IC{", signif(RV$res$conf.int[1,2],6), "}{", signif(RV$res$conf.int[2,2],6) , "}} \\tabularnewline\\hline"
+							\\texttt{\\IC{", if(input$fluct) format(RV$res$conf.int[1,1], digit = 5, scientific = TRUE)  else  format(RV$res$conf.int[1,1], digit = 5),"}{", if(input$fluct) format(RV$res$conf.int[2,1], digit = 5,scientific = TRUE)  else  format(RV$res$conf.int[2,1], digit = 5) ,"}}& \\texttt{\\IC{", format(RV$res$conf.int[1,2], digit = 5), "}{", format(RV$res$conf.int[2,2], digit = 5) , "}} \\tabularnewline\\hline"
 						)
 					}
 				}
@@ -1137,7 +1524,7 @@
 		\end{itemize}
       \paragraph*{Decision:}
       \begin{itemize}
-      	\item The $p$-value for \textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else if(input$fluct) "probability", if(input$twosample) " difference",sep="")}} is equal to \texttt{\Sexpr{format(signif(RV$res$p.value[1],6),scientific=TRUE)}}.
+      	\item The $p$-value for \textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else if(input$fluct) "probability", if(input$twosample) " difference",sep="")}} is equal to \texttt{\Sexpr{format(RV$res$p.value[1], digit = 5, scientific=TRUE)}}.
 				That suggests that the
 				\textbfit{mutation \Sexpr{paste(if(!input$fluct) "number" else if(input$fluct) "probability",
 					if(input$twosample) " difference",sep="")}}
@@ -1148,7 +1535,7 @@
       	  if(input$estfit) {
 			cat(paste("\\item The $p$-value for
 				\\textbfit{fitness", if(input$twosample) " difference","}
-				is equal to \\texttt{",format(signif(RV$res$p.value[2],6),scientific=TRUE),"}.
+				is equal to \\texttt{",format(RV$res$p.value[2], digit = 5, scientific=TRUE),"}.
 				That suggests that the ",
 			  "\\textbfit{fitness", if(input$twosample) " difference",
 				"} is ", if(RV$res$p.value[2] > 0.05) "not ","significantly ",
