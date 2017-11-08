@@ -1,8 +1,3 @@
-How to use ShinyFlan
+ShinyFlan is available !
 
-1- Install R packages shiny, shinyjs, knitr and flan;
-
-2- Launch the app by running:
-
-require(shiny)
-runGitHub("AdriMaz/ShinyFlan")
+https://toltex-shiny.u-ga.fr/RodaShiny/ShinyFlan/
