@@ -1,11 +1,14 @@
 require(shinyjs, quietly = TRUE)
 require(knitr, quietly = TRUE)
 require(flan, quietly = TRUE)
+require(xlsx, quietly = TRUE)
+
 
 shinyUI(
   fluidPage(
     useShinyjs(),
   tabsetPanel(
+
 
 ## TAB 1
     tabPanel("Hypothesis testing",
@@ -42,7 +45,9 @@ shinyUI(
             		accept = c(
             		  "text/csv",
             		  "text/comma-separated-values,text/plain",
-            		  ".csv")
+                  "application/vnd.ms-excel",
+            		  ".csv",
+                  ".xls", ".xlsx")
       	      )
       	    )
       	  ),
@@ -51,9 +56,11 @@ shinyUI(
       	      conditionalPanel(condition = "input.twosample",
                 fileInput(inputId = "sample2", label = "Choose file for sample 2",
           		    accept = c(
-            		    "text/csv",
-            		    "text/comma-separated-values,text/plain",
-            		    ".csv")
+                    "text/csv",
+              		  "text/comma-separated-values,text/plain",
+                    "application/vnd.ms-excel",
+              		  ".csv",
+                    ".xls", ".xlsx")
                 )
       	      )
       	    )
@@ -63,7 +70,7 @@ shinyUI(
       	      checkboxInput(inputId = "header", label = tags$strong("Header"), value = TRUE)
       	    ),
       	    column(8,
-      	      checkboxInput(inputId = "twosample", label = tags$strong("Two-sample test"), value = FALSE)
+      	      checkboxInput(inputId = "twosample", label = tags$strong("Two Sample Test"), value = FALSE)
       	    )
       	  ),
           # tags$hr(),
@@ -72,7 +79,7 @@ shinyUI(
       	    column(6,
               fluidRow(
       	         checkboxInput(inputId = "estfit", label = tags$strong("Unknown fitness"), value = TRUE),
-                 checkboxInput(inputId = "fluct", label = tags$strong("With final counts"), value = FALSE)
+                 checkboxInput(inputId = "fluct", label = tags$strong("Random final counts"), value = FALSE)
               )
       	    ),
       	    column(6,
@@ -83,7 +90,7 @@ shinyUI(
       	  ),
       	  fluidRow(
       	    column(6,
-      	      selectInput(inputId = "method", label = "Estimation method",
+      	      selectInput(inputId = "method", label = "Estimation Method",
       		      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
       	      )
       	    ),
@@ -249,7 +256,7 @@ shinyUI(
             conditionalPanel(condition = "input.fluct",
         	    column(2,
   	            textInput(inputId = "mfn1", "Mean final number of cells",
-    		          value = 0
+    		          value = 1e9
     	          )
   	          ),
       	      column(3,
@@ -288,7 +295,7 @@ shinyUI(
               conditionalPanel(condition = "input.fluct",
         	      column(2,
               		textInput(inputId = "mfn2", "Mean final number of cells",
-              		  value = 0
+              		  value = 1e9
               		)
         	      ),
         	      column(3,
@@ -349,7 +356,7 @@ shinyUI(
         sidebarLayout(
           sidebarPanel(width = 4,
             fluidRow(
-              column(2,
+              column(3,
                 actionButton(inputId = "sim", label = tags$strong("Sample"))
               ),
               column(3,
@@ -359,7 +366,7 @@ shinyUI(
                 uiOutput(outputId = "est.sim")
                 # actionButton(inputId = "est.sim", label = tags$strong("Estimation"))
               ),
-              column(4,
+              column(3,
                 uiOutput(outputId = "dlsample")
                   # actionButton(inputId = "showcodesim", label = tags$strong("Show/Hide Code"))
               )
@@ -423,7 +430,7 @@ shinyUI(
             ),
             fluidRow(
               # column(4,
-                checkboxInput(inputId = "fluctsim", label = tags$strong("With final counts"), value = FALSE)
+                checkboxInput(inputId = "fluctsim", label = tags$strong("Random final counts"), value = FALSE)
               # ),
             ),
             conditionalPanel("input.fluctsim",
@@ -452,7 +459,7 @@ shinyUI(
         	      )
               ),
               column(6,
-        	      selectInput(inputId = "method.sim", label = "Estimation method",
+        	      selectInput(inputId = "method.sim", label = "Estimation Method",
         		      choices = c("Maximum Likelihood (ML)" = "ML", "Generating Function (GF)" = "GF", "P0" = "P0")
         	      )
               )

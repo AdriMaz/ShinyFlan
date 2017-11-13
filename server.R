@@ -25,7 +25,12 @@ shinyServer(function(input, output, session) {
       return(NULL)
     } else if(RV$file1_state == "reset"){
       return(NULL)
-    } else read.csv(file$datapath, header = input$header)
+    } else {
+      # cat("Type file =", file$type, "\n")
+      if(file$type == "application/vnd.ms-excel") {
+      read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
+      } else read.csv(file$datapath, header = input$header)
+    }
   })
 
   inFile2 <- reactive({
@@ -34,7 +39,11 @@ shinyServer(function(input, output, session) {
       return(NULL)
     } else if(RV$file2_state == "reset"){
       return(NULL)
-    } else read.csv(file$datapath, header = input$header)
+    } else {
+      if(file$type == "application/vnd.ms-excel") {
+      read.xlsx(file$datapath, sheetIndex = 2, header = input$header)
+      } else read.csv(file$datapath, header = input$header)
+    }
   })
 
   observeEvent(input$sample1, {
@@ -243,16 +252,11 @@ shinyServer(function(input, output, session) {
       fn <- list(fn1 = if(length(RV$data1) == 2) RV$data1[[2]] else NULL,
                  fn2 = if(length(RV$data2) == 2) RV$data2[[2]] else NULL)
 
-     if(!input$fluct){
-       mfn <- list(NULL, NULL)
-       cvfn <- list(NULL, NULL)
-     } else {
-       mfn <- list(if(as.numeric(input$mfn1) == 0 | !is.null(fn[[1]])) NULL else as.numeric(input$mfn1),
-                  if(as.numeric(input$mfn2) == 0 | !is.null(fn[[2]])) NULL else as.numeric(input$mfn2))
+      mfn <- list(if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
+                  if(!input$fluct) NULL else {if(as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
 
-       cvfn <- list(if((as.numeric(input$cvfn1) == 0 & is.null(mfn[[1]])) | !is.null(fn[[1]])) NULL else as.numeric(input$cvfn1),
-                    if((as.numeric(input$cvfn2) == 0 & is.null(mfn[[2]])) | !is.null(fn[[2]])) NULL else as.numeric(input$cvfn2))
-     }
+      cvfn <- list(if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
+                   if(!input$fluct) NULL else {if((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
 
 
       if(is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
@@ -299,20 +303,21 @@ shinyServer(function(input, output, session) {
   )
 
 
-  # observeEvent(input$estfit,{
-  #   if(!is.null(RV$res)){
-  #     RV$res <- c()
-  #     RV$warn <- c()
-  #   }
-  # })
+  observeEvent(input$estfit,{
+    if(!is.null(RV$res)){
+      RV$res <- c()
+      RV$warn <- c()
+      RV$show_res <- FALSE
+    }
+  })
 
 
   observeEvent(input$fluct,{
     if(!is.null(RV$res)){
       RV$res <- c()
       RV$warn <- c()
+      RV$show_res <- FALSE
     }
-    if(RV$show_res) RV$show_res <- FALSE
   })
 
   output$launchtest <- renderUI({
@@ -334,14 +339,14 @@ shinyServer(function(input, output, session) {
   refresh <- function(){
     updateTextInput(session, "death1", value = 0)
     updateTextInput(session, "plateff1", value = 1)
-    if(length(RV$data1) < 2){
+    if(length(RV$data1) == 1){
       updateTextInput(session, "mfn1", value = 0)
       updateTextInput(session, "cvfn1", value = 0)
     }
     updateTextInput(session, "fitvalue1", value = 1)
     updateTextInput(session, "death2", value = 0)
     updateTextInput(session, "plateff2", value = 1)
-    if(length(RV$data2) < 2){
+    if(length(RV$data2) == 2){
       updateTextInput(session, "mfn2", value = 0)
       updateTextInput(session, "cvfn2", value = 0)
     }
@@ -359,9 +364,7 @@ shinyServer(function(input, output, session) {
     updateCheckboxInput(session, "header", value = TRUE)
     updateCheckboxInput(session, "estfit", value = TRUE)
     updateCheckboxInput(session, "twosample", value = FALSE)
-    if(length(RV$data1) == 2 | length(RV$data2) == 2){
-      updateCheckboxInput(session, "fluct", value = TRUE)
-    } else updateCheckboxInput(session, "fluct", value = FALSE)
+    updateCheckboxInput(session, "fluct", value = FALSE)
 
     updateSelectInput(session, "model", label = "Distribution of mutant lifetime",
                       choices = c("Exponential (LD model)" = "LD", "Constant (H model)" = "H")
@@ -393,6 +396,8 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$refresh, {
+
+    refresh()
     RV$file1_state <- "reset"
     RV$file2_state <- "reset"
 
@@ -401,8 +406,6 @@ shinyServer(function(input, output, session) {
 
     reset("sample1")
     reset("sample2")
-
-    refresh()
 
     }
   )
@@ -432,10 +435,6 @@ shinyServer(function(input, output, session) {
 
 
   observeEvent(input$estfit, {
-    if(!is.null(RV$res)){
-      RV$res <- c()
-      RV$warn <- c()
-    }
     updateTextInput(session, "fitvalue1", value = 1)
     updateTextInput(session, "fitvalue2", value = 1)
     if(RV$show_res) RV$show_res <- FALSE
@@ -465,6 +464,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$restest <- renderPrint({
+
       validate(
 	need(as.numeric(input$plateff1) >=0 & as.numeric(input$plateff1) <= 1 & as.numeric(input$plateff2) >= 0 & as.numeric(input$plateff2) <= 1, "Plating efficiency must be a positive and <= 1 number."),
 
@@ -488,7 +488,9 @@ shinyServer(function(input, output, session) {
 
       )
 
-      if(RV$show_res) print(RV$res)
+      if(RV$show_res) {
+        print(RV$res)
+      }
 
    })
 
