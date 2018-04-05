@@ -91,6 +91,6 @@ You can also perform parametric estimation (function `mutestim` of **flan**) on 
 
 ***
 ## Contact
-For any question, remark, or bug, please feel free to send a mail at [mazoyer(dot)adrien(at)courrier(dot)uqam(dot)ca](mailto:mazoyer.adrien(at)courrier.uqam.ca) or to report it [here](https://github.com/AdriMaz/ShinyFlan/issues).
+For any question, remark, or bug, please feel free to send a mail at [mazoyer(dot)adrien(at)courrier(dot)uqam(dot)ca](mailto:mazoyer.adrien@courrier.uqam.ca) or to report it [here](https://github.com/AdriMaz/ShinyFlan/issues).
 
 Developed at [Laboratoire Jean Kuntzmann](http://ljk.imag.fr/) by Adrien Mazoyer, Rémy Drouilhet, and Bernard Ycart.
