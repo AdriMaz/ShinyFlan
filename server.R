@@ -21,27 +21,32 @@ shinyServer(function(input, output, session) {
      ## Reactive for selection file
   inFile1 <- reactive({
     file <- input$sample1
-    if(is.null(file) | is.null(RV$file1_state)) {
+    if (is.null(file) | is.null(RV$file1_state)) {
       return(NULL)
-    } else if(RV$file1_state == "reset"){
+    } else if (RV$file1_state == "reset") {
       return(NULL)
     } else {
       # cat("Type file =", file$type, "\n")
-      if(file$type == "application/vnd.ms-excel") {
+      # cat("Type of file = ", file$type, "\n")
+      if (file$type == "application/vnd.ms-excel" | file$type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+        # cat("Loading xls file...\n")
       read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
-      } else read.csv(file$datapath, header = input$header)
+      } else {
+        # cat("Loading csv/txt file...\n")
+        read.csv(file$datapath, header = input$header)
+      }
     }
   })
 
   inFile2 <- reactive({
     file <- input$sample2
-    if(is.null(file) | is.null(RV$file2_state)){
+    if (is.null(file) | is.null(RV$file2_state)) {
       return(NULL)
-    } else if(RV$file2_state == "reset"){
+    } else if (RV$file2_state == "reset") {
       return(NULL)
     } else {
-      if(file$type == "application/vnd.ms-excel") {
-      read.xlsx(file$datapath, sheetIndex = 2, header = input$header)
+      if (file$type == "application/vnd.ms-excel" | file$type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
       } else read.csv(file$datapath, header = input$header)
     }
   })
@@ -54,9 +59,9 @@ shinyServer(function(input, output, session) {
     RV$file2_state <- "uploaded"
   })
 
-  observeEvent(input$twosample,{
-    if(!is.null(RV$res)) RV$res <- c()
-    if(!is.null(RV$data2)) {
+  observeEvent(input$twosample, {
+    if (!is.null(RV$res)) RV$res <- c()
+    if (!is.null(RV$data2)) {
       RV$data2 <- c()
       RV$file2_state <- "reset"
       reset("sample2")
@@ -70,37 +75,42 @@ shinyServer(function(input, output, session) {
     validate(need(RV$file1_state == "uploaded", "Please load data set"))
 
     ## If a new sample is selected, clean the result part
-    if(!is.null(RV$data1)){
-      if(length(RV$data1 == 1)){
-        if(length(inFile1()) != 1) {
+    if (!is.null(RV$data1)) {
+      if (length(RV$data1 == 1)) {
+        if (length(inFile1()) != 1) {
           RV$show_res <- FALSE
-        } else if(length(RV$data1[[1]]) != length(inFile1()[[1]])){
+        } else if (length(RV$data1[[1]]) != length(inFile1()[[1]])) {
           RV$show_res <- FALSE
-        } else if(sum(RV$data1[[1]] != inFile1()[[1]]) > 0){
+        } else if (sum(RV$data1[[1]] != inFile1()[[1]]) > 0) {
           RV$show_res <- FALSE
           }
         } else {
-        if(length(inFile1()) != 2) {
+        if (length(inFile1()) != 2) {
           RV$show_res <- FALSE
-        } else if(length(RV$data1[[1]]) != length(inFile1()[[1]]) | length(RV$data1[[2]]) != length(inFile1()[[2]])){
+        } else if (length(RV$data1[[1]]) != length(inFile1()[[1]]) | length(RV$data1[[2]]) != length(inFile1()[[2]])) {
           RV$show_res <- FALSE
-        } else if(sum(RV$data1[[1]] != inFile1()[[1]]) > 0){
+        } else if (sum(RV$data1[[1]] != inFile1()[[1]]) > 0) {
           RV$show_res <- FALSE
         }
-        else if(sum(RV$data1[[2]] != inFile1()[[2]]) > 0){
+        else if (sum(RV$data1[[2]] != inFile1()[[2]]) > 0) {
          RV$show_res <- FALSE
        }
       }
     }
     RV$data1 <- inFile1()
-    if(length(RV$data1) == 2) {
+    cat("length(RV$data1) = ", length(RV$data1), "\n")
+    if (length(RV$data1) == 2) {
       updateCheckboxInput(session, "fluct", value = TRUE)
       fn  <- RV$data1[[2]]
       ## Default value of mfn and cvfn if sample with final count
       updateTextInput(session, "mfn1", value = mean(fn))
       updateTextInput(session, "cvfn1", value = sd(fn)/mean(fn))
     }
-
+    # cat("Helloooooo!\n")
+    cat("mode(RV$data1[[1]]) = ", mode(RV$data1[[1]]), "\n")
+    # cat("mode(RV$data1[[2]]) = ", mode(RV$data1[[2]]), "\n")
+      cat(t(RV$data1[[1]]),"\n")
+      cat(t(RV$data1),"\n")
     return(t(RV$data1))
 
   }, colnames = FALSE, rownames = TRUE)
@@ -112,31 +122,32 @@ shinyServer(function(input, output, session) {
 
     validate(need(!is.null(inFile2()), "Please load data set"))
 
-    if(!is.null(RV$data2)){
-      if(length(RV$data2 == 1)){
-        if(length(inFile2()) != 1) {
+    if (!is.null(RV$data2)) {
+      if (length(RV$data2 == 1)) {
+        if (length(inFile2()) != 1) {
           RV$show_res <- FALSE
-        } else if(length(RV$data2[[1]]) != length(inFile2()[[1]])){
+        } else if (length(RV$data2[[1]]) != length(inFile2()[[1]])) {
           RV$show_res <- FALSE
-        } else if(sum(RV$data2[[1]] != inFile2()[[1]]) > 0){
+        } else if (sum(RV$data2[[1]] != inFile2()[[1]]) > 0) {
           RV$show_res <- FALSE
         }
       } else {
-        if(length(inFile2()) != 2) {
+        if (length(inFile2()) != 2) {
           RV$show_res <- FALSE
-        } else if (length(RV$data2[[1]]) != length(inFile2()[[1]]) | length(RV$data2[[2]]) != length(inFile2()[[2]])){
+        } else if (length(RV$data2[[1]]) != length(inFile2()[[1]]) | length(RV$data2[[2]]) != length(inFile2()[[2]])) {
           RV$show_res <- FALSE
-        } else if(sum(RV$data2[[1]] != inFile2()[[1]]) > 0){
+        } else if (sum(RV$data2[[1]] != inFile2()[[1]]) > 0) {
           RV$show_res <- FALSE
         }
-        else if(sum(RV$data2[[2]] != inFile2()[[2]]) > 0){
+        else if (sum(RV$data2[[2]] != inFile2()[[2]]) > 0) {
          RV$show_res <- FALSE
         }
       }
     }
     RV$data2 <- inFile2()
 
-    if(length(RV$data2) == 2) {
+    cat("length(RV$data2) = ", length(RV$data2),  "\n")
+    if (length(RV$data2) == 2) {
       updateCheckboxInput(session, "fluct", value = TRUE)
       fn  <- RV$data2[[2]]
       updateTextInput(session, "mfn2", value = mean(fn))
@@ -183,35 +194,35 @@ shinyServer(function(input, output, session) {
 
     if (is.null(inFile1())) return(NULL)
 
-    fit <- if(input$estfit) NULL else as.numeric(input$fitvalue1)
+    fit <- if (input$estfit) NULL else as.numeric(input$fitvalue1)
 
     death <- as.numeric(input$death1)
     plateff <- as.numeric(input$plateff1)
 
     # alt <- input$mutalt
-    alt <- if(input$twosample){
-      if(!input$fluct) input$mutdiffalt else input$mutprobdiffalt
+    alt <- if (input$twosample) {
+      if (!input$fluct) input$mutdiffalt else input$mutprobdiffalt
     } else {
-      if(!input$fluct) input$mutalt else input$mutprobalt
+      if (!input$fluct) input$mutalt else input$mutprobalt
     }
 
 
-    if(is.null(fit)) alt <- c(alt,if(input$twosample) input$fitdiffalt else input$fitalt)
+    if (is.null(fit)) alt <- c(alt,if (input$twosample) input$fitdiffalt else input$fitalt)
     clevel <- as.numeric(input$conflevel)
     winsor <- as.numeric(input$winsor)
 
-    if(!input$twosample){
+    if (!input$twosample) {
 
       mc <- RV$data1[[1]]
-      fn <- if(length(RV$data1) == 2) RV$data1[[2]] else NULL
+      fn <- if (length(RV$data1) == 2) RV$data1[[2]] else NULL
 
-      mfn <- if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)}
-      cvfn <- if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)}
+      mfn <- if (!input$fluct) NULL else {if (as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)}
+      cvfn <- if (!input$fluct) NULL else {if ((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)}
 
-      fit0 <- if(is.null(fit)) as.numeric(input$fit0) else NULL
+      fit0 <- if (is.null(fit)) as.numeric(input$fit0) else NULL
       # RV$res
-      test <- withWarnings(if(is.null(fn)){
-              		if(is.null(mfn)){
+      test <- withWarnings(if (is.null(fn)) {
+              		if (is.null(mfn)) {
               		  flan.test(mc = mc,
               		    fitness = fit, death = death, plateff = plateff,
               		    model = input$model,
@@ -243,28 +254,28 @@ shinyServer(function(input, output, session) {
     } else {
       if (is.null(inFile2())) return(NULL)
 
-      fit <-  if(!input$estfit) c(fit,as.numeric(input$fitvalue2)) else NULL
+      fit <-  if (!input$estfit) c(fit,as.numeric(input$fitvalue2)) else NULL
 
-      fit0 <- if(is.null(fit)) as.numeric(input$fitdiff0) else NULL
+      fit0 <- if (is.null(fit)) as.numeric(input$fitdiff0) else NULL
 
       death <- c(death,as.numeric(input$death2)) ; plateff <- c(plateff, as.numeric(input$plateff2))
       mc <- list(mc1 = RV$data1[[1]], mc2 = RV$data2[[1]])
-      fn <- list(fn1 = if(length(RV$data1) == 2) RV$data1[[2]] else NULL,
-                 fn2 = if(length(RV$data2) == 2) RV$data2[[2]] else NULL)
+      fn <- list(fn1 = if (length(RV$data1) == 2) RV$data1[[2]] else NULL,
+                 fn2 = if (length(RV$data2) == 2) RV$data2[[2]] else NULL)
 
-      mfn <- list(if(!input$fluct) NULL else {if(as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
-                  if(!input$fluct) NULL else {if(as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
+      mfn <- list(if (!input$fluct) NULL else {if (as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
+                  if (!input$fluct) NULL else {if (as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
 
-      cvfn <- list(if(!input$fluct) NULL else {if((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
-                   if(!input$fluct) NULL else {if((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
+      cvfn <- list(if (!input$fluct) NULL else {if ((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
+                   if (!input$fluct) NULL else {if ((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
 
 
-      if(is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
-      if(is.null(mfn[[1]]) & is.null(mfn[[2]])) mfn <- NULL
-      if(is.null(cvfn[[1]]) & is.null(cvfn[[2]])) cvfn <- NULL
+      if (is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
+      if (is.null(mfn[[1]]) & is.null(mfn[[2]])) mfn <- NULL
+      if (is.null(cvfn[[1]]) & is.null(cvfn[[2]])) cvfn <- NULL
 
-      test <- withWarnings(if(is.null(fn)){
-            	    if(is.null(mfn)){
+      test <- withWarnings(if (is.null(fn)) {
+            	    if (is.null(mfn)) {
             	      flan.test(mc = mc,
                       fitness = fit, death = death, plateff = plateff,
                       model = input$model,
@@ -304,7 +315,7 @@ shinyServer(function(input, output, session) {
 
 
   observeEvent(input$estfit,{
-    if(!is.null(RV$res)){
+    if (!is.null(RV$res)) {
       RV$res <- c()
       RV$warn <- c()
       RV$show_res <- FALSE
@@ -313,7 +324,7 @@ shinyServer(function(input, output, session) {
 
 
   observeEvent(input$fluct,{
-    if(!is.null(RV$res)){
+    if (!is.null(RV$res)) {
       RV$res <- c()
       RV$warn <- c()
       RV$show_res <- FALSE
@@ -321,32 +332,32 @@ shinyServer(function(input, output, session) {
   })
 
   output$launchtest <- renderUI({
-    if((!input$twosample & !is.null(RV$data1)) || (input$twosample & !is.null(RV$data1) & !is.null(RV$data2))) {
+    if ((!input$twosample & !is.null(RV$data1)) || (input$twosample & !is.null(RV$data1) & !is.null(RV$data2))) {
       actionButton(inputId = "launchtest", label = tags$strong("Perform test"))
     }
     })
 
   #
   # output$refresh <- renderUI({
-  #   if(RV$show_res) actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
+  #   if (RV$show_res) actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
   #   # actionButton(inputId = "refresh", label = tags$strong("Refresh all"))
   # })
 
   output$dlbutton <- renderUI(
-        if(RV$show_res) downloadButton(outputId = "report", label = tags$strong("PDF report"))
+        if (RV$show_res) downloadButton(outputId = "report", label = tags$strong("PDF report"))
   )
 
-  refresh <- function(){
+  refresh <- function() {
     updateTextInput(session, "death1", value = 0)
     updateTextInput(session, "plateff1", value = 1)
-    if(length(RV$data1) == 1){
+    if (length(RV$data1) == 1) {
       updateTextInput(session, "mfn1", value = 0)
       updateTextInput(session, "cvfn1", value = 0)
     }
     updateTextInput(session, "fitvalue1", value = 1)
     updateTextInput(session, "death2", value = 0)
     updateTextInput(session, "plateff2", value = 1)
-    if(length(RV$data2) == 2){
+    if (length(RV$data2) == 2) {
       updateTextInput(session, "mfn2", value = 0)
       updateTextInput(session, "cvfn2", value = 0)
     }
@@ -412,7 +423,7 @@ shinyServer(function(input, output, session) {
 
 
   output$report <- downloadHandler(filename = "Report.pdf",
-  	content = function(file){
+  	content = function(file) {
   	  out <- knit2pdf(input='Report.Rnw', output="Report.tex", clean = TRUE, quiet = TRUE)
       # out <- knit(input='Report.Rmd', clean = TRUE)
    	  file.copy(out, file)},
@@ -423,33 +434,33 @@ shinyServer(function(input, output, session) {
     updateTextInput(session, "mutdiff0", value = 0)
     updateTextInput(session, "mutprobdiff0", value = 0)
     updateTextInput(session, "fitdiff0", value = 0)
-    if(RV$show_res) RV$show_res <- FALSE
+    if (RV$show_res) RV$show_res <- FALSE
   })
 
   observeEvent(!input$twosample, {
     updateTextInput(session, "mut0", value = 1)
     updateTextInput(session, "mutprob0", value = 1e-9)
     updateTextInput(session, "fit0", value = 1)
-    if(RV$show_res) RV$show_res <- FALSE
+    if (RV$show_res) RV$show_res <- FALSE
   })
 
 
   observeEvent(input$estfit, {
     updateTextInput(session, "fitvalue1", value = 1)
     updateTextInput(session, "fitvalue2", value = 1)
-    if(RV$show_res) RV$show_res <- FALSE
+    if (RV$show_res) RV$show_res <- FALSE
   })
 
 
   observeEvent(!input$estfit, {
     updateTextInput(session, "fit0", value = 1)
     updateTextInput(session, "fitdiff0", value = 0)
-    if(RV$show_res) RV$show_res <- FALSE
+    if (RV$show_res) RV$show_res <- FALSE
   })
 
   output$warn <- renderPrint({
-    if(RV$show_res) {
-      if(!is.null(RV$warn)){
+    if (RV$show_res) {
+      if (!is.null(RV$warn)) {
         cat("Warning message(s) \n")
         for (w in RV$warn) cat("-",w$message,"\n")
       }
@@ -457,7 +468,7 @@ shinyServer(function(input, output, session) {
   })
 
   output$callstest <- renderUI({
-    if(RV$show_res){
+    if (RV$show_res) {
       file <- knit("CallsTest.Rmd", quiet = TRUE)
       includeMarkdown(file)
     }
@@ -488,7 +499,7 @@ shinyServer(function(input, output, session) {
 
       )
 
-      if(RV$show_res) {
+      if (RV$show_res) {
         print(RV$res)
       }
 
@@ -511,11 +522,14 @@ shinyServer(function(input, output, session) {
     # pefplot <- as.numeric(input$plateff.plot)
 
 
-    # if(!is.null(inFile1())){
-    if(!is.null(RV$data1)){
+    # if (!is.null(inFile1())) {
+    if (!is.null(RV$data1)) {
       # validate(need(length(RV$data1) == 1 | (input$mfn1 == 0 & input$cvfn1 == 0), "Graphic representation for sample with random final count is not available yet..."))
 
       mc <- RV$data1[[1]]
+      # cat("There !\n")
+      # cat(  mc, "\n")
+      # cat("mode(mc) = ", mode(mc), "\n")
       X <- 0:max(mc)
       # updateNumericInput(session, "maxX", value = max(mc))
       hist(mc, nclass = input$nclass1, probability = TRUE,
@@ -530,16 +544,16 @@ shinyServer(function(input, output, session) {
       pch <- c(22, NA)
       ptbg <- c("azure3", NA)
 
-      if(!is.null(RV$res)) {
-        if(!input$twosample){
+      if (!is.null(RV$res)) {
+        if (!input$twosample) {
           mut <- RV$res$estimate[1]
-          fit <- if(input$estfit) RV$res$estimate[2] else as.numeric(input$fitvalue1)
+          fit <- if (input$estfit) RV$res$estimate[2] else as.numeric(input$fitvalue1)
         } else {
           mut <- RV$res$estimate[1,1]
-          fit <- if(input$estfit) RV$res$estimate[1,2] else as.numeric(input$fitvalue1)
+          fit <- if (input$estfit) RV$res$estimate[1,2] else as.numeric(input$fitvalue1)
         }
         names(mut) <- NULL ; names(fit) <- NULL
-        if(!input$fluct){
+        if (!input$fluct) {
           points(X,dflan(X,mutations = mut,
                         fitness = fit, death = as.numeric(input$death1), plateff = as.numeric(input$plateff1),
                         model = input$model), col = "blue3", lwd = 3, pch = 4)
@@ -552,7 +566,7 @@ shinyServer(function(input, output, session) {
         }
         # pch <- c(pch, "")
       }
-      # if(input$plot){
+      # if (input$plot) {
       #   lines(X,dflan(X,mutations = mutplot, fitness = fitplot, death = deathplot, plateff = pefplot, model = input$model.plot), col = "red", lwd = 3)
       #   leg <- c(leg, "Distribution with chosen parameters")
       #   col <- c(col, "red")
@@ -588,7 +602,7 @@ shinyServer(function(input, output, session) {
     # X <- 0:input$maxX
 
     # validate(need(length(RV$data2) == 1 | (input$mfn2 == 0 & input$cvfn2 == 0), "Graphic representation for sample with random final count is not available yet..."))
-    if(!is.null(RV$data2)){
+    if (!is.null(RV$data2)) {
       # validate(need(!input$fluct, "Graphic representation for sample with random final count is not available yet..."))
       mc <- RV$data2[[1]]
       X <- 0:max(mc)
@@ -606,12 +620,12 @@ shinyServer(function(input, output, session) {
       pch <- c(22, NA)
       ptbg <- c("bisque", NA)
 
-      if(RV$show_res) {
+      if (RV$show_res) {
         mut <- RV$res$estimate[2,1]
-        fit <- if(input$estfit) RV$res$estimate[2,2] else as.numeric(input$fitvalue1)
+        fit <- if (input$estfit) RV$res$estimate[2,2] else as.numeric(input$fitvalue1)
 
         names(mut) <- NULL ; names(fit) <- NULL
-        if(!input$fluct){
+        if (!input$fluct) {
           points(X,dflan(X,mutations = mut,
                         fitness = fit, death = as.numeric(input$death2), plateff = as.numeric(input$plateff2),
                         model = input$model), col = "forestgreen", lwd = 3, pch = 4)
@@ -627,19 +641,19 @@ shinyServer(function(input, output, session) {
   })
 
     output$param1.sim <- renderUI({
-      if(input$model.sim == "LN"){
+      if (input$model.sim == "LN") {
         textInput(inputId = "meanlog.sim", label = "Mean-log",
           value = -0.3795851
         )
-      } else if (input$model.sim == "G"){
+      } else if (input$model.sim == "G") {
         textInput(inputId = "shape.sim", label = "Shape",
           value = 11.18049
         )
-      # } else if (input$model.sim == "LD"){
+      # } else if (input$model.sim == "LD") {
       #   textInput(inputId = "rate.sim", label = "Rate",
       #     value = 1
       #   )
-      # } else if (input$model.sim == "H"){
+      # } else if (input$model.sim == "H") {
       #   textInput(inputId = "loc.sim", label = "Location",
       #     value = log(2)
       #   )
@@ -647,11 +661,11 @@ shinyServer(function(input, output, session) {
     })
 
     output$param2.sim <- renderUI({
-      if(input$model.sim == "LN"){
+      if (input$model.sim == "LN") {
         textInput(inputId = "sdlog.sim", label = "Sd-log",
           value = 0.3016223
         )
-      } else if(input$model.sim == "G"){
+      } else if (input$model.sim == "G") {
         textInput(inputId = "scale.sim", label = "Scale",
           value = 0.06395825
         )
@@ -659,8 +673,8 @@ shinyServer(function(input, output, session) {
     })
 
     # output$showcodesim <- renderUI({
-    #   if(!is.null(RV$res_sim)) {
-    #     if(!RV$showcode_sim) actionButton(inputId = "showcodesim", label = tags$strong("Show code"))
+    #   if (!is.null(RV$res_sim)) {
+    #     if (!RV$showcode_sim) actionButton(inputId = "showcodesim", label = tags$strong("Show code"))
     #     else actionButton(inputId = "showcodesim", label = tags$strong("Hide code"))
     #   }
     #   # actionButton(inputId = "showcode", label = tags$strong("Show/Hide code"))
@@ -674,21 +688,21 @@ shinyServer(function(input, output, session) {
     # })
 
     output$est.sim <- renderUI({
-      if(!is.null(RV$res_sim)) actionButton(inputId = "est.sim", label = tags$strong("Estimation"))
+      if (!is.null(RV$res_sim)) actionButton(inputId = "est.sim", label = tags$strong("Estimation"))
     })
 
     output$dlsample <- renderUI({
-      if(!is.null(RV$res_sim)) downloadButton(outputId = "samplefile", label = tags$strong("Save sample"))
+      if (!is.null(RV$res_sim)) downloadButton(outputId = "samplefile", label = tags$strong("Save sample"))
     })
 
     output$samplefile <- downloadHandler(filename = "Sample.csv",
-      content = function(file){
+      content = function(file) {
         out <- write.csv(RV$res_sim, file, row.names=FALSE)
       }
     )
 
     output$cvfn.sim <- renderUI({
-      if(input$distfn.sim != "C") textInput(inputId = "cvfn.sim", label = "Coef. variation final number of cells", value = 0)
+      if (input$distfn.sim != "C") textInput(inputId = "cvfn.sim", label = "Coef. variation final number of cells", value = 0)
     })
 
     observeEvent(input$sim,{
@@ -705,7 +719,7 @@ shinyServer(function(input, output, session) {
       	# need(as.numeric(input$cvfn/sim) >= 0, "Coef. variation final number must be a non-negative number."),
 
       )
-      if(!is.null(RV$res_est)){
+      if (!is.null(RV$res_est)) {
         RV$res_est <- c()
         RV$warn_est <- c()
       }
@@ -717,7 +731,7 @@ shinyServer(function(input, output, session) {
         G = {lt <- list(name = "gamma", shape = as.numeric(input$shape.sim), scale = as.numeric(input$scale.sim))}
       )
 
-      if(input$fluctsim){
+      if (input$fluctsim) {
         switch(input$distfn.sim,
           NO = {dfn <- NULL},
           LN = {dfn <- "lnorm"},
@@ -725,14 +739,14 @@ shinyServer(function(input, output, session) {
         )
       } else dfn <- NULL
 
-      mut <- if(input$fluctsim) as.numeric(input$mutprob.sim) else as.numeric(input$mut.sim)
+      mut <- if (input$fluctsim) as.numeric(input$mutprob.sim) else as.numeric(input$mut.sim)
       fit <- as.numeric(input$fit.sim)
       delta <- as.numeric(input$death.sim)
       pef <- as.numeric(input$plateff.sim)
-      mfn <- if(input$fluctsim) as.numeric(input$mfn.sim) else 1e9
-      cvfn <- if(input$fluctsim & input$distfn.sim != "C") as.numeric(input$cvfn.sim) else 0
+      mfn <- if (input$fluctsim) as.numeric(input$mfn.sim) else 1e9
+      cvfn <- if (input$fluctsim & input$distfn.sim != "C") as.numeric(input$cvfn.sim) else 0
 
-      if(input$fluctsim){
+      if (input$fluctsim) {
         sim <- withWarnings(rflan(n = input$nsim, mutprob = mut,
                           fitness = fit, death = delta,
                           plateff = pef,
@@ -756,17 +770,17 @@ shinyServer(function(input, output, session) {
 
     observeEvent(input$est.sim,{
 
-      if(!is.null(RV$res_est)){
+      if (!is.null(RV$res_est)) {
         RV$res_est <- c()
         RV$warn_est <- c()
       }
       mc <- RV$res_sim
 
-      fn <- if(is.list(mc)) mc$fn else NULL
-      if(is.list(mc)) mc <- mc$mc
+      fn <- if (is.list(mc)) mc$fn else NULL
+      if (is.list(mc)) mc <- mc$mc
 
 
-      fit <- if(input$estfitsim) NULL else as.numeric(input$fit.est)
+      fit <- if (input$estfitsim) NULL else as.numeric(input$fit.est)
       death <- as.numeric(input$death.est)
       pef <- as.numeric(input$plateff.est)
 
@@ -783,31 +797,31 @@ shinyServer(function(input, output, session) {
     })
 
     output$warn_sim <- renderPrint({
-      if(!is.null(RV$warn_sim)){
+      if (!is.null(RV$warn_sim)) {
         cat("Warning message(s) \n")
         for (w in RV$warn_sim) cat("-",w$message,"\n")
       }
     })
     output$callssim <- renderUI({
-      if(!is.null(RV$res_sim)){
+      if (!is.null(RV$res_sim)) {
         file <- knit("CallsSim.Rmd", quiet = TRUE)
         includeMarkdown(file)
       }
     })
 
     observeEvent(input$estfitsim,{
-      if(!is.null(RV$res_est)){
+      if (!is.null(RV$res_est)) {
         RV$res_est <- c()
         RV$warn_est <- c()
       }
     })
 
     observeEvent(input$fluctsim,{
-      if(!is.null(RV$res_sim)){
+      if (!is.null(RV$res_sim)) {
         RV$res_sim <- c()
         RV$warn_sim <- c()
       }
-      if(!is.null(RV$res_est)){
+      if (!is.null(RV$res_est)) {
         RV$res_est <- c()
         RV$warn_est <- c()
       }
@@ -871,8 +885,8 @@ shinyServer(function(input, output, session) {
         need(as.numeric(input$death.sim) >= 0 & input$death.sim < 0.5, "Death parameter must be non-negative and < 0.5 number"),
         need(as.numeric(input$plateff.sim) >= 0 & input$plateff.sim <= 1, "Plating efficiency must be non-negative and <= 1 number")
       )
-      # if(input$fluctsim) return(t(RV$res_sim)) else return(RV$res_sim$mc)
-      if(length(RV$res_sim) == 2) {
+      # if (input$fluctsim) return(t(RV$res_sim)) else return(RV$res_sim$mc)
+      if (length(RV$res_sim) == 2) {
         res <- data.frame(lapply(RV$res_sim, as.integer))
         names(res) <- c("mc", "fn")
         return(t(res))
@@ -885,13 +899,13 @@ shinyServer(function(input, output, session) {
     }, colnames = FALSE, rownames = TRUE)
 
     output$plot.theo <- renderUI({
-      if(!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H" )){
+      if (!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H" )) {
         checkboxInput(inputId = "plot.theo", label = tags$strong("Plot theoretical distribution"), value = TRUE)
       }
     })
 
     output$plot.est <- renderUI({
-      if(!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H" )){
+      if (!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H" )) {
         checkboxInput(inputId = "plot.est", label = tags$strong("Plot estimated distribution"), value = TRUE)
       }
     })
@@ -916,13 +930,13 @@ shinyServer(function(input, output, session) {
         # need(as.numeric(input$shape.sim) >= 0, "Shape must be non-negative number")
       )
 
-      mut <- if(input$fluctsim) as.numeric(input$mutprob.sim) else as.numeric(input$mut.sim)
+      mut <- if (input$fluctsim) as.numeric(input$mutprob.sim) else as.numeric(input$mut.sim)
       fit <- as.numeric(input$fit.sim)
       death <- as.numeric(input$death.sim)
       pef <- as.numeric(input$plateff.sim)
 
-      if(!is.null(RV$res_sim)){
-        mc <- if(length(RV$res_sim) == 2) RV$res_sim$mc else RV$res_sim
+      if (!is.null(RV$res_sim)) {
+        mc <- if (length(RV$res_sim) == 2) RV$res_sim$mc else RV$res_sim
         X <- 0:max(mc)
         # updateNumericInput(session, "maxX", value = max(mc))
         hist(mc, nclass = input$nclass.sim, probability = TRUE,
@@ -938,8 +952,8 @@ shinyServer(function(input, output, session) {
         pch <- c(22, NA)
         ptbg <- c("azure3", NA)
 
-        if(!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H")){
-          if(input$plot.theo){
+        if (!input$fluctsim & (input$model.sim == "LD" | input$model.sim == "H")) {
+          if (input$plot.theo) {
             points(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef,
                           model = input$model.sim), col = "darkmagenta", lwd = 3, pch = 4)
 
@@ -950,11 +964,11 @@ shinyServer(function(input, output, session) {
             lty <- c(lty, NA)
             # legend("topright", inset = c(0.05,0.05), legend = leg, cex = 1.5)
           }
-          if(!is.null(RV$res_est) & input$plot.est){
+          if (!is.null(RV$res_est) & input$plot.est) {
             mut <- RV$res_est$mutations
             death <- as.numeric(input$death.est)
             pef <- as.numeric(input$plateff.est)
-            fit <- if(input$estfitsim) RV$res_est$fitness else as.numeric(input$fit.est)
+            fit <- if (input$estfitsim) RV$res_est$fitness else as.numeric(input$fit.est)
 
             points(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef,
                           model = input$model.est), col = "blue3", lwd = 3, pch = 3)
@@ -969,7 +983,7 @@ shinyServer(function(input, output, session) {
         legend("topright", inset = c(0.05,0.05), legend = leg, pch = pch, pt.bg = ptbg, pt.cex = 3, lty = lty, lwd = 3, col = col, cex = 1.5)
       }
       # else {
-      #   if(!input$fluctsim & input$plot.sim & (input$model.sim == "LD" | input$model.sim == "H")){
+      #   if (!input$fluctsim & input$plot.sim & (input$model.sim == "LD" | input$model.sim == "H")) {
       #     X <- 0:input$max.sim
       #     plot(X,dflan(X,mutations = mut, fitness = fit, death = death, plateff = pef, model = input$model.sim),
       #     pch = "+", ylab = "", lwd = 3, col = "red", xlab = "Mutant count", cex.lab = 1.5, cex.axis = 1.5)
@@ -980,20 +994,20 @@ shinyServer(function(input, output, session) {
     })
 
     output$callsest <- renderUI({
-      if(!is.null(RV$res_est)){
+      if (!is.null(RV$res_est)) {
         file <- knit("CallsEst.Rmd", quiet = TRUE)
         includeMarkdown(file)
       }
     })
 
     output$resest <- renderPrint({
-        if(!is.null(RV$res_est)) {
+        if (!is.null(RV$res_est)) {
           print(unlist(RV$res_est))
         }
      })
 
      output$warn_est <- renderPrint({
-       if(!is.null(RV$warn_est)){
+       if (!is.null(RV$warn_est)) {
          cat("Warning message(s) \n")
          for (w in RV$warn_est) cat("-",w$message,"\n")
        }
