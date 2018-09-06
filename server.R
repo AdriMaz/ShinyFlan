@@ -28,12 +28,12 @@ shinyServer(function(input, output, session) {
     } else {
       # cat("Type file =", file$type, "\n")
       # cat("Type of file = ", file$type, "\n")
-      if (file$type == "application/vnd.ms-excel" | file$type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-        # cat("Loading xls file...\n")
-      read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
-      } else {
-        # cat("Loading csv/txt file...\n")
+      type <- file_ext(file$name)
+      validate(need(type %in% c("csv", "txt", "xls", "xlsx"), "Wrong file format!"))
+      if (type %in% c("csv", "txt")) {
         read.csv(file$datapath, header = input$header)
+      } else if (type %in% c("xls", "xlsx")) {
+        read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
       }
     }
   })
@@ -45,9 +45,13 @@ shinyServer(function(input, output, session) {
     } else if (RV$file2_state == "reset") {
       return(NULL)
     } else {
-      if (file$type == "application/vnd.ms-excel" | file$type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-      read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
-      } else read.csv(file$datapath, header = input$header)
+      type <- file_ext(file$name)
+      validate(need(type %in% c("csv", "txt", "xls", "xlsx"), "Wrong file format!"))
+      if (type %in% c("csv", "txt")) {
+        read.csv(file$datapath, header = input$header)
+      } else if (type %in% c("xls", "xlsx")) {
+        read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
+      }
     }
   })
 
@@ -98,7 +102,7 @@ shinyServer(function(input, output, session) {
       }
     }
     RV$data1 <- inFile1()
-    cat("length(RV$data1) = ", length(RV$data1), "\n")
+    # cat("length(RV$data1) = ", length(RV$data1), "\n")
     if (length(RV$data1) == 2) {
       updateCheckboxInput(session, "fluct", value = TRUE)
       fn  <- RV$data1[[2]]
@@ -107,10 +111,10 @@ shinyServer(function(input, output, session) {
       updateTextInput(session, "cvfn1", value = sd(fn)/mean(fn))
     }
     # cat("Helloooooo!\n")
-    cat("mode(RV$data1[[1]]) = ", mode(RV$data1[[1]]), "\n")
+    # cat("mode(RV$data1[[1]]) = ", mode(RV$data1[[1]]), "\n")
     # cat("mode(RV$data1[[2]]) = ", mode(RV$data1[[2]]), "\n")
-      cat(t(RV$data1[[1]]),"\n")
-      cat(t(RV$data1),"\n")
+      # cat(t(RV$data1[[1]]),"\n")
+      # cat(t(RV$data1),"\n")
     return(t(RV$data1))
 
   }, colnames = FALSE, rownames = TRUE)

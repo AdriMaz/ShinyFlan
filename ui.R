@@ -2,6 +2,7 @@ require(shinyjs, quietly = TRUE)
 require(knitr, quietly = TRUE)
 require(flan, quietly = TRUE)
 require(xlsx, quietly = TRUE)
+require(tools, quietly = TRUE)
 
 
 shinyUI(
@@ -43,11 +44,14 @@ shinyUI(
       	    column(12,
       	      fileInput(inputId = "sample1", label = "Choose file for sample 1",
             		accept = c(
-            		  "text/csv",
-            		  "text/comma-separated-values,text/plain",
-                  "application/vnd.ms-excel",
-            		  ".csv",
-                  ".xls", ".xlsx")
+            		  # "text/csv",
+            		  # "text/comma-separated-values",
+                  # "text/plain",
+                  # "application/vnd.ms-excel",
+                  # "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            		  ".csv", ".txt",
+                  ".xls", ".xlsx"
+                )
       	      )
       	    )
       	  ),
@@ -56,10 +60,10 @@ shinyUI(
       	      conditionalPanel(condition = "input.twosample",
                 fileInput(inputId = "sample2", label = "Choose file for sample 2",
           		    accept = c(
-                    "text/csv",
-              		  "text/comma-separated-values,text/plain",
-                    "application/vnd.ms-excel",
-              		  ".csv",
+                    # "text/csv",
+              		  # "text/comma-separated-values,text/plain",
+                    # "application/vnd.ms-excel",
+              		  ".csv", ".txt",
                     ".xls", ".xlsx")
                 )
       	      )
