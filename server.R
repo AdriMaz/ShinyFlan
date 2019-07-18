@@ -150,7 +150,7 @@ shinyServer(function(input, output, session) {
     }
     RV$data2 <- inFile2()
 
-    cat("length(RV$data2) = ", length(RV$data2),  "\n")
+    # cat("length(RV$data2) = ", length(RV$data2),  "\n")
     if (length(RV$data2) == 2) {
       updateCheckboxInput(session, "fluct", value = TRUE)
       fn  <- RV$data2[[2]]
