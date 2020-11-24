@@ -31,7 +31,7 @@ shinyServer(function(input, output, session) {
       type <- file_ext(file$name)
       validate(need(type %in% c("csv", "txt", "xls", "xlsx"), "Wrong file format!"))
       if (type %in% c("csv", "txt")) {
-        read.csv(file$datapath, header = input$header)
+        read.table(file$datapath, header = input$header, sep = input$sep)
       } else if (type %in% c("xls", "xlsx")) {
         read.xlsx(file$datapath, sheetIndex = 1, header = input$header)
       }

@@ -73,7 +73,12 @@ shinyUI(
       	    column(4,
       	      checkboxInput(inputId = "header", label = tags$strong("Header"), value = TRUE)
       	    ),
-      	    column(8,
+      	    column(4,
+      	       selectInput(inputId = "sep", label = "Separator",
+      	                       choices = c("," = ",", ";" = ";", "tab" = " ")
+      	       )     
+      	    ),
+      	    column(4,
       	      checkboxInput(inputId = "twosample", label = tags$strong("Two Sample Test"), value = FALSE)
       	    )
       	  ),
