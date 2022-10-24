@@ -3,7 +3,7 @@ require(knitr, quietly = TRUE)
 require(flan, quietly = TRUE)
 require(xlsx, quietly = TRUE)
 require(tools, quietly = TRUE)
-
+require(markdown, quietly = TRUE)
 
 shinyUI(
   fluidPage(
