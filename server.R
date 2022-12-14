@@ -267,19 +267,24 @@ shinyServer(function(input, output, session) {
       fn <- list(fn1 = if (length(RV$data1) == 2) RV$data1[[2]] else NULL,
                  fn2 = if (length(RV$data2) == 2) RV$data2[[2]] else NULL)
 
-      mfn <- list(if (!input$fluct) NULL else {if (as.numeric(input$mfn1) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn1)},
-                  if (!input$fluct) NULL else {if (as.numeric(input$mfn2) == 0 | !is.null(fn)) NULL else as.numeric(input$mfn2)})
+      # cat('fluct =', input$fluct,"\n",
+      #     "mfn1 =" , input$mfn1, "\n",
+      #     "mfn2 =" , input$mfn2, "\n")
+      
+      mfn <- list(if (!input$fluct) NULL else {if (as.numeric(input$mfn1) == 0 | !is.null(fn[[1]])) NULL else as.numeric(input$mfn1)},
+                  if (!input$fluct) NULL else {if (as.numeric(input$mfn2) == 0 | !is.null(fn[[2]])) NULL else as.numeric(input$mfn2)})
 
-      cvfn <- list(if (!input$fluct) NULL else {if ((as.numeric(input$cvfn1) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn1)},
-                   if (!input$fluct) NULL else {if ((as.numeric(input$cvfn2) == 0 & is.null(mfn)) | !is.null(fn)) NULL else as.numeric(input$cvfn2)})
+      cvfn <- list(if (!input$fluct) NULL else {if ((as.numeric(input$cvfn1) == 0 & is.null(mfn[[1]])) | !is.null(fn[[1]])) NULL else as.numeric(input$cvfn1)},
+                   if (!input$fluct) NULL else {if ((as.numeric(input$cvfn2) == 0 & is.null(mfn[[2]])) | !is.null(fn[[2]])) NULL else as.numeric(input$cvfn2)})
 
-
+      # cat("mfn =", c(mfn[[1]],mfn[[2]]), "\n")
       if (is.null(fn[[1]]) & is.null(fn[[2]])) fn <- NULL
       if (is.null(mfn[[1]]) & is.null(mfn[[2]])) mfn <- NULL
       if (is.null(cvfn[[1]]) & is.null(cvfn[[2]])) cvfn <- NULL
 
       test <- withWarnings(if (is.null(fn)) {
             	    if (is.null(mfn)) {
+            	      cat("mfn est nul !\n")
             	      flan.test(mc = mc,
                       fitness = fit, death = death, plateff = plateff,
                       model = input$model,
@@ -289,6 +294,7 @@ shinyServer(function(input, output, session) {
                       winsor = winsor
                     )
           	      } else {
+          	        # cat("mfn n'est pas nul !\n")
             	      flan.test(mc = mc, mfn = mfn, cvfn = cvfn,
                       fitness = fit, death = death, plateff = plateff,
                       model = input$model,
